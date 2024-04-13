@@ -41,12 +41,13 @@ export class Game extends Scene {
   }
 }
 function handleKeyboardInput(event) {
+  console.log(event.key);
   //check if input is valid letter in alphabet
-  if (!str.match(/[a-z]/i)) return invalidInput();
+  if (!event.key.match(/[a-z]/i)) return invalidInput();
   // check if input is correct
-  if (event.key.toLowerCase() == curWord[0].toLowerCase()) return validInput;
+  if (event.key.toLowerCase() == curWord[0].toLowerCase()) return validInput();
 
-  return invalidInput;
+  return invalidInput();
 }
 
 function invalidInput() {
@@ -57,6 +58,7 @@ function invalidInput() {
  * Handles valid input from the player.
  * Removes the first letter from the current word, and moves on to the next letter.
  * If the current word has no more letters, generates a new word and increases the players power level by one.
+ * If the player reaches their max power level on that attack, they attack the other player.
  */
 function validInput() {
   curWord = curWord.substring(1);
@@ -64,9 +66,12 @@ function validInput() {
   if (curWord.length == 0) {
     curWord = getRandomWord();
     playerOne.power++;
+    if (playerOne.power == playerOne.maxPower) {
+      playerOne.attack(playerTwo);
+    }
   }
 }
 
 function getRandomWord() {
-  words.words[Math.floor(Math.random() * words.words.length)];
+  return words.words[Math.floor(Math.random() * words.words.length)];
 }
