@@ -1,24 +1,31 @@
 import { Scene } from "phaser";
-import { Player } from "../classes/player.js";
+import { Player } from "../classes/Player";
 import words from "../data.json";
+import { HealthBar } from "../classes/HealthBar";
 let playerOne;
 let playerTwo; // TODO: figure out how to implement multiplayer & CPU
 let curWord = ""; //holds the state of the current word that the player is typing
 let wordBoard; //displays the current word
+let playerOneType = "test";
 export class Game extends Scene {
   constructor() {
     super("Game");
   }
+  preload() {
+    this.load.image(
+      playerOneType + "init",
+      "/assets/players/" + playerOneType + "/init.png"
+    );
+    // this.load.spritesheet("boy", "images/boy.png", {
+    //   frameWidth: 120,
+    //   frameHeight: 200,
+    // });
+  }
   create() {
     curWord = getRandomWord();
     this.cameras.main.setBackgroundColor(0x00ff00);
-    playerOne = new Player(this, 512, 384, 64, 64);
-    console.log(playerOne);
-    // this.add.image(512, 384, 'background').setAlpha(0.2);
-    // this.input.once('pointerdown', () => {
+    playerOne = createPlayer(this, playerOneType, 512, 384, 32, 32);
 
-    //     this.scene.start('GameOver');
-    // });
     wordBoard = this.add
       .text(512, 384, curWord, {
         fontFamily: "Arial Black",
@@ -38,6 +45,7 @@ export class Game extends Scene {
   }
   update() {
     wordBoard.setText(curWord); //constantly updates the display of the current word
+    playerOne.healthBar.updateGraphics(playerOne.health);
   }
 }
 function handleKeyboardInput(event) {
@@ -74,4 +82,11 @@ function validInput() {
 
 function getRandomWord() {
   return words.words[Math.floor(Math.random() * words.words.length)];
+}
+
+function createPlayer(scene, playerType, x, y, width, height) {
+  const player = new Player(scene, playerType, 512, 384, 64, 64);
+  player.healthBar = new HealthBar(scene, 100, 100, 200, 20, 0xffffff);
+  player.healthBar.create();
+  return player;
 }

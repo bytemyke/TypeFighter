@@ -1,6 +1,6 @@
 
 Create Player:
-  ☐ Item
+  ☐ 
   ☐ 
 
 
@@ -8,11 +8,11 @@ Create Player:
 Create typing game basics:
   ☐ Make JSON file of words
   ☐ Pull word in and handle completion and 
-  ☐ Create word box
+  ☐ Create a word display box
 
 
 
-Imlement Multiplayer:
+Implement Multiplayer:
   ☐ idek where to start
 
 Create Main Menu Scene:

@@ -1,9 +1,12 @@
-export class Cpu {
-  constructor(x, y, width, height, difficulty) {
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
-    this.difficulty = difficulty;
-  }
-}
+import { Player } from "./Player";
+
+/*
+Difficulty options:
+    1 - easy
+    2 - average
+    3 - above average
+    4 - scholar
+
+
+*/
+export class Cpu extends Player {}
