@@ -2,7 +2,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   power = 0;
   health = 100;
   /* TODO: make the following variables dynamic based on fight later */
-  dmg = 1;
+  dmg = 120;
   maxPower = 3;
   constructor(scene, playerType, x, y, width, height) {
     super(scene, x, y, playerType + "init");
@@ -30,5 +30,8 @@ export class Player extends Phaser.GameObjects.Sprite {
   attack(target) {
     target.health -= this.dmg;
     if (target.health > 0) return;
+    else {
+      this.scene.gameOver(this);
+    }
   }
 }

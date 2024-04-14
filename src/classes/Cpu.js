@@ -1,3 +1,4 @@
+// @ts-ignore - ignore import warning for the time being
 import { Player } from "./Player";
 
 /*
@@ -9,4 +10,8 @@ Difficulty options:
 
 
 */
-export class Cpu extends Player {}
+export class Cpu extends Player {
+  constructor(scene, playerType, x, y, width, height) {
+    super(scene, playerType, x, y, width, height);
+  }
+}

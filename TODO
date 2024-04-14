@@ -1,14 +1,29 @@
 
+
+Main:
+  ☐ Game Functionality
+  ☐ Player one functionality
+  ☐ CPU functionality
+  ☐ Multiplayer functionality
+  ☐ Layout
+  ☐ Art
+  ☐ Optomize
+
+
+
+
 Create Player:
   ☐ 
   ☐ 
 
 
-  
+Create game scene:
+  ☐ Create healthbars
+  ☐ 
 Create typing game basics:
-  ☐ Make JSON file of words
-  ☐ Pull word in and handle completion and 
-  ☐ Create a word display box
+  ✔ Make JSON file of words @done(24-04-13 20:28)
+  ✔ Pull word in and handle completion and @done(24-04-13 20:28)
+  ✔ Create a word display box @done(24-04-13 20:28)
 
 
 
@@ -21,6 +36,9 @@ Create Main Menu Scene:
 
 Create Multiplayer Menu Scene:
   ☐ figure out multiplayer first
+
+
+
 
 
 
