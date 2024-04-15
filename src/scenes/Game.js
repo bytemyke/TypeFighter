@@ -50,7 +50,8 @@ export class Game extends Scene {
         this.sys.game.scale.gameSize.width,
         384,
         32,
-        32, curWord
+        32, 
+        curWord
       );
     } else {
       //implement multiplayer
@@ -110,7 +111,8 @@ export class Game extends Scene {
     });
   }
   cpuInput(key) {
-
+    handleKeyboardInput({
+      key: key,}, playerTwo);
   }
 }
 
@@ -125,12 +127,13 @@ function createPlayer(scene, playerType, x, y, width, height, curWord) {
   player.curWord = curWord;
   return player;
 }
-function createCpu(scene, playerType, x, y, width, height) {
+function createCpu(scene, playerType, x, y, width, height, curWord) {
   const cpu = new Cpu(scene, playerType, x, y, width, height);
   cpu.healthBar = new HealthBar(scene, 750, 100, 200, 20, 0xffffff);
   cpu.healthBar.create();
   cpu.powerBar = new PowerBar(scene, 950, 200, 20, 200, 0xffffff);
   cpu.powerBar.create();
+  cpu.curWord = curWord;
   return cpu;
 }
 
