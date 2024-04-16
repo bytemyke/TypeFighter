@@ -23,7 +23,7 @@ export class Cpu extends Player {
     setInterval(() => {
       console.log('starting loop')
       console.log(this.curWord)
-      if(!this.curWord) return;
+      if(!this.curWord || !this.scene.gameOver == true) return;
       counter += 1;
       // if (Math.random() * this.difficulty +1 < this.difficulty) {
         this.scene.cpuInput(this.curWord[0]);

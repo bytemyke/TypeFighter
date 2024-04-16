@@ -10,12 +10,11 @@ let playerOne;
 let playerTwo; // TODO: figure out how to implement multiplayer & CPU
 let curWord = ""; //holds the state of the current word that the player is typing
 let wordBoard; //displays the current word
-
 /* variables to change to dynamic */
 let playerOneType = "test";
 let playerTwoType = "test";
-let multiplayer = false;
-
+let multiplayer = false
+let wordList = getWordList();
 export class Game extends Scene {
   constructor() {
     super("Game");
@@ -39,7 +38,7 @@ export class Game extends Scene {
   }
   create() {
     console.log(this.sys.game.scale.gameSize);
-    curWord = getRandomWord();
+    curWord = wordList[0];
     this.cameras.main.setBackgroundColor(0x808080);
     /*Create players and player assets (health bars, power bars)*/
     playerOne = createPlayer(this, playerOneType, 250, 384, 32, 32, curWord);
@@ -85,6 +84,7 @@ export class Game extends Scene {
     updatePlayerStats(playerTwo);
   }
   gameOver(winningPlayer) {
+    if(gameOver == true) return;
     let text;
     winningPlayer == playerOne
       ? (text = this.add.text(512, 384, "YOU WIN!!!", {
@@ -125,6 +125,7 @@ function createPlayer(scene, playerType, x, y, width, height, curWord) {
   player.powerBar = new PowerBar(scene, 100, 200, 20, 200, 0xffffff);
   player.powerBar.create();
   player.curWord = curWord;
+  player.curWordIndex = 0;
   return player;
 }
 function createCpu(scene, playerType, x, y, width, height, curWord) {
@@ -134,6 +135,7 @@ function createCpu(scene, playerType, x, y, width, height, curWord) {
   cpu.powerBar = new PowerBar(scene, 950, 200, 20, 200, 0xffffff);
   cpu.powerBar.create();
   cpu.curWord = curWord;
+  cpu.curWordIndex = 0;
   return cpu;
 }
 
@@ -162,14 +164,18 @@ function invalidInput(player) {
 /**
  * Handles valid input from the player.
  * Removes the first letter from the current word, and moves on to the next letter.
- * If the current word has no more letters, generates a new word and increases the players power level by one.
+ * If the current word has no more letters, generates a new word, adds new word to wordList and increases the players power level by one.
  * If the player reaches their max power level on that attack, they attack the other player.
  */
 function validInput(player) {
   player.curWord = player.curWord.substring(1);
   console.log("valid input");
   if (player.curWord.length == 0) {
-    player.curWord = getRandomWord();
+    // generate new word
+    wordList.push(getRandomWord());
+    //get next word from list
+    player.curWordIndex++;
+    player.curWord = wordList[player.curWordIndex];
     player.power++;
     console.log(player.power, player.maxPower);
     if (player.power == player.maxPower) {
@@ -183,3 +189,13 @@ function validInput(player) {
 function getRandomWord() {
   return words.words[Math.floor(Math.random() * words.words.length)];
 }
+
+function getWordList() {
+  let wordList = words.words;
+  let myList = [];
+  for (let i = 0; i < 10; i++) {
+    myList.push(wordList[Math.floor(Math.random() * wordList.length)]);
+  }
+  return myList;
+}
+
