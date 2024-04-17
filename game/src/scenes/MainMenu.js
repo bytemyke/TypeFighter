@@ -19,10 +19,21 @@ export class MainMenu extends Scene
             align: 'center'
         }).setOrigin(0.5);
 
-        this.input.once('pointerdown', () => {
+        var style = { font: "24px Arial", fill: "#ffffff", align: "center" };
 
-            this.scene.start('Game');
+        var button1 = this.add.text(512, 420, "Single Player", style);
+        button1.setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.scene.start('Game'));
 
-        });
+        var button2 = this.add.text(512 - 300, 420, "Multiplayer", style);
+        button2.setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.scene.start('Multiplayer'));
+
+        var button3 = this.add.text(512 + 150, 420, "Instructions", style);
+        button3.setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.scene.start('Instructions'));
+
+
+
     }
 }
