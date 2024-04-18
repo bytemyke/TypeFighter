@@ -19,10 +19,6 @@ export class MultiPlayerGame extends Scene {
     this.background = this.add
       .image(screenCenterX, screenCenterY, "background")
       .setOrigin(0.5);
-
-    // Based on your game size, it may "stretch" and distort.
-    this.background.displayWidth = this.sys.canvas.width;
-    this.background.displayHeight = this.sys.canvas.height;
   }
 
   update() {}

@@ -4,6 +4,10 @@ export class MainMenu extends Scene {
   constructor() {
     super("MainMenu");
   }
+  preload() {
+    this.load.image("staff", "assets/players/mage/staff.png");
+
+  }
 
   create() {
     const screenCenterX =
@@ -15,12 +19,9 @@ export class MainMenu extends Scene {
     this.background = this.add
       .image(screenCenterX, screenCenterY, "background")
       .setOrigin(0.5);
-
-    // Based on your game size, it may "stretch" and distort.
-    // this.background.displayWidth = this.sys.canvas.width;
-    // this.background.displayHeight = this.sys.canvas.height;
     
-
+      const staff = this.add.image(screenCenterX, screenCenterY, 'staff');
+    staff.setOrigin(0.5);
     this.add
       .text(screenCenterX, 80, "TypeFighter", {
         fontFamily: "Arial Black",

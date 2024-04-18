@@ -13,6 +13,7 @@ export class MultiPlayerLobby extends Scene {
         insertCoin({ gameId: "HoRqDTqmYaXZgFmQvyfV",maxPlayersPerRoom: 2 }).then(() => {
             this.scene.start("MultiPlayerGame", {players: this.players, isHost: isHost()});
         })
+        
     }
     addPlayer(playerState) {
         let sprite = "";
