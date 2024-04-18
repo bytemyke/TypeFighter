@@ -13,7 +13,7 @@ let wordBoard; //displays the current word
 /* variables to change to dynamic */
 let playerOneType = "test";
 let playerTwoType = "test";
-let multiplayer = false
+let multiplayer = false;
 let wordList = getWordList();
 export class Game extends Scene {
   constructor() {
@@ -31,12 +31,27 @@ export class Game extends Scene {
         "/assets/players/" + playerTwoType + "/init.png"
       );
     }
+    this.load.image("staff", "/assets/players/mage/staff.png");
     // this.load.spritesheet("boy", "images/boy.png", {
     //   frameWidth: 120,
     //   frameHeight: 200,
     // });
   }
   create() {
+    this.scale.startFullscreen();
+
+    const screenCenterX =
+      this.cameras.main.worldView.x + this.cameras.main.width / 2;
+    const screenCenterY =
+      this.cameras.main.worldView.y + this.cameras.main.height / 2;
+
+    this.background = this.add
+      .image(screenCenterX, screenCenterY, "background")
+      .setOrigin(0.5);
+
+    // Based on your game size, it may "stretch" and distort.
+    this.background.displayWidth = this.sys.canvas.width;
+    this.background.displayHeight = this.sys.canvas.height;
     console.log(this.sys.game.scale.gameSize);
     curWord = wordList[0];
     this.cameras.main.setBackgroundColor(0x808080);
@@ -49,7 +64,7 @@ export class Game extends Scene {
         this.sys.game.scale.gameSize.width,
         384,
         32,
-        32, 
+        32,
         curWord
       );
     } else {
@@ -76,6 +91,7 @@ export class Game extends Scene {
     */
     this.input.keyboard.on("keydown", handleKeyboardInput, this);
     gameOver = false;
+    this.add.image(screenCenterX, screenCenterY, "staff").setOrigin(0.5);
   }
   update() {
     if (gameOver == true) return;
@@ -84,25 +100,25 @@ export class Game extends Scene {
     updatePlayerStats(playerTwo);
   }
   gameOver(winningPlayer) {
-    if(gameOver == true) return;
+    if (gameOver == true) return;
     let text;
     winningPlayer == playerOne
       ? (text = this.add.text(512, 384, "YOU WIN!!!", {
-        fontFamily: "Arial Black",
-        fontSize: 50,
-        color: "#00FF7F",
-        stroke: "#000000",
-        strokeThickness: 8,
-        align: "center",
-      }))
+          fontFamily: "Arial Black",
+          fontSize: 50,
+          color: "#00FF7F",
+          stroke: "#000000",
+          strokeThickness: 8,
+          align: "center",
+        }))
       : this.add.text(512, 384, "YOU LOSE", {
-        fontFamily: "Arial Black",
-        fontSize: 50,
-        color: "#ffffff",
-        stroke: "#D2042D",
-        strokeThickness: 8,
-        align: "center",
-      });
+          fontFamily: "Arial Black",
+          fontSize: 50,
+          color: "#ffffff",
+          stroke: "#D2042D",
+          strokeThickness: 8,
+          align: "center",
+        });
     //allow for restart, TODO : change to back to main menu
     this.input.keyboard.on("keydown", (event) => {
       if (event.key == "Enter") {
@@ -111,8 +127,12 @@ export class Game extends Scene {
     });
   }
   cpuInput(key) {
-    handleKeyboardInput({
-      key: key,}, playerTwo);
+    handleKeyboardInput(
+      {
+        key: key,
+      },
+      playerTwo
+    );
   }
 }
 
@@ -146,13 +166,14 @@ function updatePlayerStats(player) {
 
 /*Game logic*/
 function handleKeyboardInput(event, player = playerOne) {
-  console.log(player.curWord)
+  console.log(player.curWord);
   if (gameOver == true) return;
   console.log(event.key);
   //check if input is valid letter in alphabet
   if (!event.key.match(/[a-z]/i)) return invalidInput(player);
   // check if input is correct
-  if (event.key.toLowerCase() == player.curWord[0].toLowerCase()) return validInput(player);
+  if (event.key.toLowerCase() == player.curWord[0].toLowerCase())
+    return validInput(player);
 
   return invalidInput(player);
 }
@@ -198,4 +219,3 @@ function getWordList() {
   }
   return myList;
 }
-
