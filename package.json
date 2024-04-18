@@ -36,6 +36,7 @@
         "nipplejs": "^0.10.2",
         "phaser": "^3.80.1",
         "playroomkit": "^0.0.73",
-        "socket.io-client": "^4.7.5"
+        "socket.io-client": "^4.7.5",
+        "webfontloader": "^1.6.28"
     }
 }

@@ -21,6 +21,15 @@ export class MainMenu extends Scene {
       .setOrigin(0.5);
     
       const staff = this.add.image(screenCenterX, screenCenterY, 'staff');
+    const Button = this.add.container([512], [300], [this.add.sprite(0, 0, "button"),     this.add
+    .text(-100, -45, "Single Player", {
+      fontFamily: '"Jersey 15"',
+      fontSize: 50,
+      color: "#ffffff",
+      stroke: "#000000",
+      strokeThickness: 10,
+    })])
+
     staff.setOrigin(0.5);
     this.add
       .text(screenCenterX, 80, "TypeFighter", {
@@ -32,7 +41,6 @@ export class MainMenu extends Scene {
         align: "left",
       })
       .setOrigin(0);
-
 
     // this.add.image(512, 300, "logo");
 
