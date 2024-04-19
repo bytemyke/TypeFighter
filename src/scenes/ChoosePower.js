@@ -1,15 +1,35 @@
+/**
+ * The ChoosePower scene is responsible for displaying the options for choosing a player's power.
+ * When the user selects a power, the game is started with that power.
+ */
 import { Scene } from "phaser";
 import powerData from "../data/power.json";
 export class ChoosePower extends Scene {
+  /**
+   * The mode of the game, either single or multiplayer.
+   */
+  mode;
+
+  /**
+   * Set the mode of the game based on the data passed in from the previous scene.
+   * @param {Object} data - The data passed in from the previous scene.
+   */
   init(data) {
     data.mode == "single" || data.mode == "multi"
       ? (this.mode = data.mode)
       : (this.mode = "single");
   }
+
+  /**
+   * The constructor of the ChoosePower scene.
+   */
   constructor() {
     super("ChoosePower");
   }
 
+  /**
+   * Creates the background, header, and power options of the scene.
+   */
   create() {
     const screenCenterX =
       this.cameras.main.worldView.x + this.cameras.main.width / 2;
@@ -24,7 +44,7 @@ export class ChoosePower extends Scene {
         fontSize: 200,
         color: "#7a7a7a",
         stroke: "#FFF",
-        strokeThickness: 4,
+        strokeThickness: 6,
       })
       .setOrigin(0.5, 0.5);
     const x = 600;
@@ -50,13 +70,25 @@ export class ChoosePower extends Scene {
     });
   }
 
+  /**
+   * Starts the game with the selected power.
+   * @param {Object} power - The selected power.
+   */
   startGame(power) {
     this.mode == "single"
       ? this.scene.start("Game", { power: power, mode: "single" })
-      : this.scene.start("Game", { power: power, mode: "multi" });
+      : this.scene.start("MultiPlayerLobby", { power: power, mode: "multi" });
     return;
   }
 
+  /**
+   * Creates a power option container, which includes the power's name, description, and image.
+   * @param {Phaser.Scene} scene - The scene that this power option will be added to.
+   * @param {Object} power - The power object that describes the power.
+   * @param {Number} cellWidth - The width of the cell that the power option will be placed in.
+   * @param {Number} cellHeight - The height of the cell that the power option will be placed in.
+   * @returns {Phaser.GameObjects.Container} - The power option container.
+   */
   CreatePowerOption(scene, power, cellWidth, cellHeight) {
     const background = scene.add
       .rectangle(0, 0, cellWidth - 40, cellHeight - 40, 0x222224)
@@ -94,9 +126,9 @@ export class ChoosePower extends Scene {
       {
         fontFamily: '"Caveat"',
         fontSize: 28,
-        color: "#000000",
+        color: "#FFF",
         stroke: "#FFF",
-        strokeThickness: 4,
+        strokeThickness: 0.5,
         wordWrap: { width: cellWidth - 100, useAdvancedWrap: true },
       }
     );

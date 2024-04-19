@@ -7,6 +7,8 @@ export class MainMenu extends Scene {
   preload() {}
 
   create() {
+    this.music = this.sound.add("fight_music", { volume: 0.5, loop: true });
+    this.music.play();
     const screenCenterX =
       this.cameras.main.worldView.x + this.cameras.main.width / 2;
     const screenCenterY =

@@ -24,8 +24,12 @@ export class Game extends Scene {
       ? (this.power = data.power)
       : (this.power = powerData.powers[0]);
     if (this.mode == "multi") {
-      this.players = data.players;
-      this.isHost = data.isHost;
+      if (data.players.length <= 1) {
+        this.mode = "single";
+      } else {
+        this.players = data.players;
+        this.isHost = data.isHost;
+      }
     }
   }
   constructor(title = "Game") {
