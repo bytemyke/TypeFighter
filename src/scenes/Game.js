@@ -1,4 +1,6 @@
 import { Scene } from "phaser";
+import powerData from "../data/power.json";
+
 // @ts-ignore - ignore import warning for the time being
 import { Player } from "../classes/Player";
 import { Cpu } from "../classes/Cpu";
@@ -11,32 +13,27 @@ let playerTwo; // TODO: figure out how to implement multiplayer & CPU
 let curWord = ""; //holds the state of the current word that the player is typing
 let wordBoard; //displays the current word
 /* variables to change to dynamic */
-let playerOneType = "test";
-let playerTwoType = "test";
-let multiplayer = false;
+// let multiplayer = false;
 let wordList = getWordList();
 export class Game extends Scene {
+  init(data) {
+    data.mode == "single" || data.mode == "multi"
+      ? (this.mode = data.mode)
+      : (this.mode = "single");
+    typeof data == "object"
+      ? (this.power = data.power)
+      : (this.power = powerData.powers[0]);
+    if (this.mode == "multi") {
+      this.players = data.players;
+      this.isHost = data.isHost;
+    }
+  }
   constructor(title = "Game") {
     super(title);
   }
-  preload() {
-    // load both player's default images
-    this.load.image(
-      playerOneType + "init",
-      "/assets/powers/" + playerOneType + "/init.png"
-    );
-    if (playerOneType != playerTwoType) {
-      this.load.image(
-        playerTwoType + "init",
-        "/assets/powers/" + playerTwoType + "/init.png"
-      );
-    }
-    // this.load.spritesheet("boy", "images/boy.png", {
-    //   frameWidth: 120,
-    //   frameHeight: 200,
-    // });
-  }
   create() {
+    this.createPlayers();
+    console.log(this.power);
     // this.scale.startFullscreen();
 
     const screenCenterX =
@@ -44,26 +41,13 @@ export class Game extends Scene {
     const screenCenterY =
       this.cameras.main.worldView.y + this.cameras.main.height / 2;
     this.background = this.add
-      .image(screenCenterX, screenCenterY, "background")
+      .image(screenCenterX, screenCenterY, "fight_background")
       .setOrigin(0.5);
+    this.cameras.main.setBackgroundColor(0x808080);
+
     console.log(this.sys.game.scale.gameSize);
     curWord = wordList[0];
-    this.cameras.main.setBackgroundColor(0x808080);
     /*Create players and player assets (health bars, power bars)*/
-    playerOne = createPlayer(this, playerOneType, 250, 384, 32, 32, curWord);
-    if (multiplayer == false) {
-      playerTwo = createCpu(
-        this,
-        playerTwoType,
-        this.sys.game.scale.gameSize.width,
-        384,
-        32,
-        32,
-        curWord
-      );
-    } else {
-      //implement multiplayer
-    }
     playerTwo.flipX = true;
     playerOne.target = playerTwo;
     playerTwo.target = playerOne;
@@ -127,12 +111,26 @@ export class Game extends Scene {
       playerTwo
     );
   }
+  createPlayers() {
+    if (this.mode == "multi") {
+      // multiplayer = true;
+    } else {
+      playerOne = createPlayer(this, this.power, 470, 390, curWord);
+      playerTwo = createCpu(
+        this,
+        getRandomPower(),
+        this.sys.game.scale.gameSize.width - 200,
+        380,
+        curWord
+      );
+    }
+  }
 }
 
 /* Creation logic */
 
-function createPlayer(scene, playerType, x, y, width, height, curWord) {
-  const player = new Player(scene, playerType, x, y, width, height);
+function createPlayer(scene, power, x, y, width, height, curWord) {
+  const player = new Player(scene, power, x, y, width, height);
   player.healthBar = new HealthBar(scene, 100, 100, 200, 20, 0xffffff);
   player.healthBar.create();
   player.powerBar = new PowerBar(scene, 100, 200, 20, 200, 0xffffff);
@@ -141,8 +139,8 @@ function createPlayer(scene, playerType, x, y, width, height, curWord) {
   player.curWordIndex = 0;
   return player;
 }
-function createCpu(scene, playerType, x, y, width, height, curWord) {
-  const cpu = new Cpu(scene, playerType, x, y, width, height);
+function createCpu(scene, power, x, y, width, height, curWord) {
+  const cpu = new Cpu(scene, power, x, y, width, height);
   cpu.healthBar = new HealthBar(scene, 750, 100, 200, 20, 0xffffff);
   cpu.healthBar.create();
   cpu.powerBar = new PowerBar(scene, 950, 200, 20, 200, 0xffffff);
@@ -211,4 +209,8 @@ function getWordList() {
     myList.push(wordList[Math.floor(Math.random() * wordList.length)]);
   }
   return myList;
+}
+
+function getRandomPower() {
+  return powerData.powers[Math.floor(Math.random() * powerData.powers.length)];
 }

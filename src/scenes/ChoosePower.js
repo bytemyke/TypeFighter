@@ -52,8 +52,8 @@ export class ChoosePower extends Scene {
 
   startGame(power) {
     this.mode == "single"
-      ? this.scene.start("SinglePlayerGame", { power: power })
-      : this.scene.start("MultiPlayerLobby", { power: power });
+      ? this.scene.start("Game", { power: power, mode: "single" })
+      : this.scene.start("Game", { power: power, mode: "multi" });
     return;
   }
 

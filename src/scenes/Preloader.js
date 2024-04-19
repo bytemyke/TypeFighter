@@ -26,6 +26,8 @@ export class Preloader extends Scene {
   preload() {
     //  Load the assets for the game - Replace with your own assets
     this.load.setPath("assets");
+    this.load.image("fight_background", "bg_fight.png");
+
     this.load.image("logo", "logo.png");
     this.load.spritesheet("button", "button/button_hover.png", {
       frameWidth: 449,
@@ -44,7 +46,7 @@ export class Preloader extends Scene {
           "_head.png"
       );
       this.load.image(
-        power.name + "head",
+        power.name + "init",
         "powers/" +
           powerFileExtension +
           "/sprite/" +
