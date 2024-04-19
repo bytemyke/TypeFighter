@@ -36,10 +36,7 @@ export class Game extends Scene {
     super(title);
   }
   create() {
-    this.createPlayers();
-    console.log(this.power);
     // this.scale.startFullscreen();
-
     const screenCenterX =
       this.cameras.main.worldView.x + this.cameras.main.width / 2;
     const screenCenterY =
@@ -47,6 +44,21 @@ export class Game extends Scene {
     this.background = this.add
       .image(screenCenterX, screenCenterY, "fight_background")
       .setOrigin(0.5);
+
+    this.overlay = this.add
+      .rectangle(
+        screenCenterX,
+        screenCenterY,
+        this.background.displayWidth,
+        this.background.displayHeight,
+        0x222224
+      )
+      .setStrokeStyle(2, 0x000000)
+      .setOrigin(0.5);
+
+    this.createPlayers();
+    this.overlay.alpha = 0.25;
+
     this.cameras.main.setBackgroundColor(0x808080);
 
     console.log(this.sys.game.scale.gameSize);
