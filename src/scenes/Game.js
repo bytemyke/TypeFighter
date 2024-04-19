@@ -2,7 +2,7 @@ import { Scene } from "phaser";
 // @ts-ignore - ignore import warning for the time being
 import { Player } from "../classes/Player";
 import { Cpu } from "../classes/Cpu";
-import words from "../data.json";
+import words from "../data/words.json";
 import { PowerBar } from "../classes/PowerBar";
 import { HealthBar } from "../classes/HealthBar";
 let gameOver = true;
@@ -23,15 +23,14 @@ export class Game extends Scene {
     // load both player's default images
     this.load.image(
       playerOneType + "init",
-      "/assets/players/" + playerOneType + "/init.png"
+      "/assets/powers/" + playerOneType + "/init.png"
     );
     if (playerOneType != playerTwoType) {
       this.load.image(
         playerTwoType + "init",
-        "/assets/players/" + playerTwoType + "/init.png"
+        "/assets/powers/" + playerTwoType + "/init.png"
       );
     }
-    this.load.image("staff", "/assets/players/mage/staff.png");
     // this.load.spritesheet("boy", "images/boy.png", {
     //   frameWidth: 120,
     //   frameHeight: 200,
@@ -44,7 +43,7 @@ export class Game extends Scene {
       this.cameras.main.worldView.x + this.cameras.main.width / 2;
     const screenCenterY =
       this.cameras.main.worldView.y + this.cameras.main.height / 2;
-      this.background = this.add
+    this.background = this.add
       .image(screenCenterX, screenCenterY, "background")
       .setOrigin(0.5);
     console.log(this.sys.game.scale.gameSize);
@@ -86,7 +85,6 @@ export class Game extends Scene {
     */
     this.input.keyboard.on("keydown", handleKeyboardInput, this);
     gameOver = false;
-    this.add.image(screenCenterX, screenCenterY, "staff").setOrigin(0.5);
   }
   update() {
     if (gameOver == true) return;

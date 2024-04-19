@@ -1,0 +1,16 @@
+{
+  "powers": [
+    {
+      "name": "Sorcery",
+      "max_power": 12,
+      "dmg": 34,
+      "description": "Deals a massive amount of damage, but requires massive amount of energy to use power"
+    },
+    {
+      "name": "Theft",
+      "max_power": 4,
+      "dmg": 12,
+      "description": "Deals less damage, but steals 2 health from opponents each time you attack"
+    }
+  ]
+}

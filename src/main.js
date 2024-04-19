@@ -6,7 +6,7 @@ import { MultiPlayerLobby } from "./scenes/MultiPlayerLobby";
 import { MultiPlayerGame } from "./scenes/MultiPlayerGame";
 import { SinglePlayerGame } from "./scenes/SinglePlayerGame";
 import { Preloader } from "./scenes/Preloader";
-import {ChooseFighter} from "./scenes/ChooseFighter";
+import { ChoosePower } from "./scenes/ChoosePower";
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 // const config = {
@@ -31,7 +31,15 @@ const config = {
     // mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [Boot, Preloader, MainMenu, SinglePlayerGame, MultiPlayerLobby, MultiPlayerGame,ChooseFighter],
+  scene: [
+    Boot,
+    Preloader,
+    MainMenu,
+    SinglePlayerGame,
+    MultiPlayerLobby,
+    MultiPlayerGame,
+    ChoosePower,
+  ],
   // scene: [ Preloader,Game],
 };
 // 1280x720
