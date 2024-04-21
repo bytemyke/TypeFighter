@@ -12,6 +12,7 @@ export class MultiPlayerLobby extends Scene {
   }
   create() {
     console.log("in lobby");
+    // myPlayer().setState("health", 100);
     onPlayerJoin((playerState) => this.addPlayer(playerState));
     console.log(this.players);
     insertCoin({ gameId: "HoRqDTqmYaXZgFmQvyfV", maxPlayersPerRoom: 2 }).then(
@@ -26,16 +27,17 @@ export class MultiPlayerLobby extends Scene {
     );
   }
   addPlayer(playerState) {
-    let sprite = "";
+    playerState.setState("health", 100);
+    playerState.setState("energy", 0);
+    console.log(playerState.getState("power"));
     console.log("running");
     this.players.push({
       power: this.power,
       health: 1,
       state: playerState,
-      sprite: sprite,
+      isHost: isHost(),
     });
     playerState.onQuit(() => {
-      sprite.destroy();
       this.players = this.players.filter((p) => p.state !== playerState);
     });
   }
