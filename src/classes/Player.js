@@ -1,14 +1,15 @@
 export class Player extends Phaser.GameObjects.Sprite {
-  power = 0;
+  energy = 0;
   health = 100;
   /* TODO: make the following variables dynamic based on fight later */
-  dmg = 120;
+  dmg = 20;
   maxPower = 3;
   constructor(scene, power, x, y, curWord) {
     const route = "/assets/powers/" + power.name;
     super(scene, x, y, power.name + "init");
     this.scene = scene;
     this.power = power;
+    this.maxPower = power.maxPower;
     this.x = x;
     this.y = y;
     this.setScale(1);

@@ -29,7 +29,7 @@ export class MultiPlayerLobby extends Scene {
     let sprite = "";
     console.log("running");
     this.players.push({
-      power: 1,
+      power: this.power,
       health: 1,
       state: playerState,
       sprite: sprite,

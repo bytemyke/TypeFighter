@@ -36,6 +36,8 @@ export class Game extends Scene {
     super(title);
   }
   create() {
+    curWord = wordList[0];
+
     // this.scale.startFullscreen();
     const screenCenterX =
       this.cameras.main.worldView.x + this.cameras.main.width / 2;
@@ -56,13 +58,12 @@ export class Game extends Scene {
       .setStrokeStyle(2, 0x000000)
       .setOrigin(0.5);
 
-    this.createPlayers();
+    this.createPlayers(curWord);
     this.overlay.alpha = 0.25;
 
     this.cameras.main.setBackgroundColor(0x808080);
 
     console.log(this.sys.game.scale.gameSize);
-    curWord = wordList[0];
     /*Create players and player assets (health bars, power bars)*/
     playerTwo.flipX = true;
     playerOne.target = playerTwo;
@@ -127,11 +128,11 @@ export class Game extends Scene {
       playerTwo
     );
   }
-  createPlayers() {
+  createPlayers(curWord) {
     if (this.mode == "multi") {
       // multiplayer = true;
     } else {
-      playerOne = createPlayer(this, this.power, 470, 390, curWord);
+      playerOne = createPlayer(this, this.power, 470, 390, curWord, true);
       playerTwo = createCpu(
         this,
         getRandomPower(),
@@ -145,9 +146,18 @@ export class Game extends Scene {
 
 /* Creation logic */
 
-function createPlayer(scene, power, x, y, width, height, curWord) {
-  const player = new Player(scene, power, x, y, width, height);
-  player.healthBar = new HealthBar(scene, 100, 100, 200, 20, 0xffffff);
+function createPlayer(scene, power, x, y, curWord, firstPlayer) {
+  console.log(curWord);
+  const player = new Player(scene, power, x, y, curWord);
+  player.healthBar = new HealthBar(
+    scene,
+    100,
+    100,
+    400,
+    30,
+    0xffffff,
+    firstPlayer
+  );
   player.healthBar.create();
   player.powerBar = new PowerBar(scene, 100, 200, 20, 200, 0xffffff);
   player.powerBar.create();
@@ -155,9 +165,9 @@ function createPlayer(scene, power, x, y, width, height, curWord) {
   player.curWordIndex = 0;
   return player;
 }
-function createCpu(scene, power, x, y, width, height, curWord) {
-  const cpu = new Cpu(scene, power, x, y, width, height);
-  cpu.healthBar = new HealthBar(scene, 750, 100, 200, 20, 0xffffff);
+function createCpu(scene, power, x, y, curWord) {
+  const cpu = new Cpu(scene, power, x, y, curWord, false);
+  cpu.healthBar = new HealthBar(scene, x / 2.5, 100, 400, 30, 0xffffff);
   cpu.healthBar.create();
   cpu.powerBar = new PowerBar(scene, 950, 200, 20, 200, 0xffffff);
   cpu.powerBar.create();
@@ -167,8 +177,10 @@ function createCpu(scene, power, x, y, width, height, curWord) {
 }
 
 function updatePlayerStats(player) {
+  // console.log(player.healthBar);
+  // console.log(player.curWord);
   player.healthBar.updateGraphics(player.health);
-  player.powerBar.updateGraphics(player.power);
+  player.powerBar.updateGraphics(player.energy);
 }
 
 /*Game logic*/
@@ -185,7 +197,7 @@ function handleKeyboardInput(event, player = playerOne) {
   return invalidInput(player);
 }
 function invalidInput(player) {
-  player.power = 0;
+  player.energy = 0;
   console.log("invalid input");
 }
 
@@ -204,12 +216,12 @@ function validInput(player) {
     //get next word from list
     player.curWordIndex++;
     player.curWord = wordList[player.curWordIndex];
-    player.power++;
-    console.log(player.power, player.maxPower);
-    if (player.power == player.maxPower) {
+    player.energy++;
+    console.log(player.energy, player.maxPower);
+    if (player.energy == player.maxPower) {
       console.log("max");
       player.attack(player.target);
-      player.power = 0;
+      player.energy = 0;
     }
   }
 }

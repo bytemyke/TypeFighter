@@ -15,8 +15,8 @@ export class PowerBar {
     this.text = this.scene.add.text(this.x, this.y - 30, "100%", style);
     this.text.setOrigin(0, 0.5);
   }
-  updateGraphics(power) {
-    this.text.setText(power);
+  updateGraphics(energy) {
+    this.text.setText(energy);
     this.bar.clear();
     this.bar.fillStyle(this.fillColor, 1);
     this.bar.fillRect(this.x, this.y, this.width, this.height);
