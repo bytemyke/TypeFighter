@@ -18,6 +18,7 @@ export class HealthBar {
       this.height,
       0xffffff
     );
+    this.bar.alpha = 0.8;
     this.barContainer = this.scene.add.container(this.x, this.y);
     const style = { font: "24px Arial", fill: "#ffffff", align: "center" };
     this.text = this.scene.add.text(this.x, this.y - 50, "100%", style);
@@ -29,6 +30,7 @@ export class HealthBar {
     this.oldHealth = 100;
     this.oldW = this.width;
     this.oldX = this.x + this.width / 2;
+    this.BarOutline.alpha = 0.9;
   }
   updateGraphics(health) {
     this.text.setText(health + "%");
@@ -42,10 +44,8 @@ export class HealthBar {
         (100 - health) / 100,
         stepWidth + " HERRRE"
       );
-
       this.bar.width = this.oldW - stepWidth;
       this.bar.x = this.oldX + stepWidth;
-
       return;
     }
   }

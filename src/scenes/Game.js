@@ -68,13 +68,21 @@ export class Game extends Scene {
     playerTwo.flipX = true;
     playerOne.target = playerTwo;
     playerTwo.target = playerOne;
+    // let wordBackgorund = this.add.rectangle(
+    //   screenCenterX,
+    //   screenCenterY - 200,
+    //   600,
+    //   100,
+    //   0x000000
+    // );
+    // wordBackgorund.alpha = 0.15;
     wordBoard = this.add
-      .text(512, 384, playerOne.curWord, {
+      .text(screenCenterX, screenCenterY - 200, 3, {
         fontFamily: "Arial Black",
-        fontSize: 38,
+        fontSize: 80,
         color: "#ffffff",
         stroke: "#000000",
-        strokeThickness: 8,
+        strokeThickness: 10,
         align: "center",
       })
       .setOrigin(0.5);
@@ -85,7 +93,39 @@ export class Game extends Scene {
     Thus, it only needs to be created once at the beginning of the game. 
     */
     this.input.keyboard.on("keydown", handleKeyboardInput, this);
-    gameOver = false;
+    this.timedEvent = this.time.delayedCall(
+      1000,
+      () => {
+        wordBoard.setText(2);
+      },
+      [],
+      this
+    );
+    this.timedEvent = this.time.delayedCall(
+      2000,
+      () => {
+        wordBoard.setText(1);
+      },
+      [],
+      this
+    );
+    this.timedEvent = this.time.delayedCall(
+      3000,
+      () => {
+        wordBoard.setText("FIGHT!");
+      },
+      [],
+      this
+    );
+    this.timedEvent = this.time.delayedCall(
+      4000,
+      () => {
+        wordBoard.setText(curWord);
+        gameOver = false;
+      },
+      [],
+      this
+    );
   }
   update() {
     if (gameOver == true) return;
@@ -159,8 +199,16 @@ function createPlayer(scene, power, x, y, curWord, firstPlayer) {
     firstPlayer
   );
   player.healthBar.create();
-  player.powerBar = new PowerBar(scene, 100, 200, 20, 200, 0xffffff);
-  player.powerBar.create();
+  (player.powerBar = new PowerBar(
+    scene,
+    100,
+    200,
+    20,
+    200,
+    0xffffff,
+    player.maxPower
+  )),
+    player.powerBar.create();
   player.curWord = curWord;
   player.curWordIndex = 0;
   return player;
@@ -169,7 +217,15 @@ function createCpu(scene, power, x, y, curWord) {
   const cpu = new Cpu(scene, power, x, y, curWord, false);
   cpu.healthBar = new HealthBar(scene, x / 2.5, 100, 400, 30, 0xffffff);
   cpu.healthBar.create();
-  cpu.powerBar = new PowerBar(scene, 950, 200, 20, 200, 0xffffff);
+  cpu.powerBar = new PowerBar(
+    scene,
+    x / 2.5 + 180,
+    200,
+    20,
+    200,
+    0xffffff,
+    cpu.maxPower
+  );
   cpu.powerBar.create();
   cpu.curWord = curWord;
   cpu.curWordIndex = 0;
