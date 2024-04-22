@@ -20,19 +20,18 @@ export class MainMenu extends Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(screenCenterX, 80, "TypeFighter", {
-        fontFamily: "Arial Black",
-        fontSize: 56,
+      .text(screenCenterX, 200, "TypeFighter ", {
+        fontFamily: "Caveat",
+        fontSize: 200,
         color: "#ffffff",
         stroke: "#000000",
         strokeThickness: 40,
-        align: "left",
+        align: "center",
       })
-      .setOrigin(0);
+      .setOrigin(0.5);
 
     // this.add.image(512, 300, "logo");
 
-    var style = { font: "24px Arial", fill: "#ffffff", align: "center" };
 
     this.createButton(
       screenCenterX,
@@ -66,7 +65,7 @@ export class MainMenu extends Scene {
       key: "on_button_hover",
       frames: this.anims.generateFrameNumbers("button", {
         start: 0,
-        end: 14,
+        end: 6,
         first: 0,
       }),
       frameRate: 24,

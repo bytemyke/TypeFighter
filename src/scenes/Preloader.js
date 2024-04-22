@@ -30,8 +30,8 @@ export class Preloader extends Scene {
 
     this.load.image("logo", "logo.png");
     this.load.spritesheet("button", "button/button_hover.png", {
-      frameWidth: 449,
-      frameHeight: 169,
+      frameWidth: 450,
+      frameHeight: 200,
     });
     // this.load.image("button", "/button/button_init.png");
     this.load.addFile(new WebFontFile(this.load, "Caveat"));
