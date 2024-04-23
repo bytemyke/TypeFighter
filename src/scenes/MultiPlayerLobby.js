@@ -1,44 +1,61 @@
 import { Scene } from "phaser";
 import nipplejs from "nipplejs";
-import { onPlayerJoin, insertCoin, isHost, myPlayer } from "playroomkit";
+import {
+  onPlayerJoin,
+  insertCoin,
+  isHost,
+  myPlayer,
+  setState,
+} from "playroomkit";
+import words from "../data/words.json";
+const list = getWordList();
 export class MultiPlayerLobby extends Scene {
   init(data) {
     this.mode = "multi";
     this.power = data.power;
   }
-  players = [];
   constructor() {
     super("MultiPlayerLobby");
   }
   create() {
-    console.log("in lobby");
+    console.log(myPlayer());
     // myPlayer().setState("health", 100);
     onPlayerJoin((playerState) => this.addPlayer(playerState));
     console.log(this.players);
     insertCoin({ gameId: "HoRqDTqmYaXZgFmQvyfV", maxPlayersPerRoom: 2 }).then(
       () => {
+        if(isHost() == true){
+          setState("wordList", list);
+        }
         this.scene.start("Game", {
           power: this.power,
           mode: "multi",
-          players: this.players,
           isHost: isHost(),
         });
       }
     );
   }
   addPlayer(playerState) {
-    playerState.setState("health", 100);
-    playerState.setState("energy", 0);
-    console.log(playerState.getState("power"));
-    console.log("running");
-    this.players.push({
-      power: this.power,
-      health: 1,
-      state: playerState,
-      isHost: isHost(),
-    });
-    playerState.onQuit(() => {
-      this.players = this.players.filter((p) => p.state !== playerState);
-    });
+    console.log(`${playerState.getProfile().name} joined the game`);
+    if (isHost()) {
+      setState("hostPlayer", playerState);
+      setState("hostPlayerPower", this.power);
+      setState("hostPlayerEnergy", 0);
+      setState("hostPlayerHealth", 100);
+      setState("hostListFallback", list);
+    } else {
+      setState("connectedPlayer", playerState);
+      setState("connectedPlayerPower", this.power);
+      setState("connectedPlayerEnergy", 0);
+      setState("connectedPlayerHealth", 100);
+    }
   }
+}
+function getWordList() {
+  let wordList = words.words;
+  let myList = [];
+  for (let i = 0; i < 10; i++) {
+    myList.push(wordList[Math.floor(Math.random() * wordList.length)]);
+  }
+  return myList;
 }

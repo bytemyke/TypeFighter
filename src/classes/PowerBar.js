@@ -36,7 +36,6 @@ export class PowerBar {
       )
       .setStrokeStyle(4, 0x000000);
     this.barContainer.add([this.bar, this.text, this.BarOutline]);
-    this.oldHealth = 100;
     this.oldW = this.width * 2;
     this.oldX = this.x + this.width / 2;
     this.BarOutline.alpha = 0.9;
@@ -47,7 +46,7 @@ export class PowerBar {
     }
   }
   updateGraphics(energy) {
-    this.text.setText(energy);
+    this.text.setText(energy.toString());
     // this.bar.clear();
     // this.bar.fillStyle(this.fillColor, 1);
     // this.bar.fillRect(this.x, this.y, this.width, this.height);

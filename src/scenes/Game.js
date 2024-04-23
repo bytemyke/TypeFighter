@@ -7,6 +7,14 @@ import { Cpu } from "../classes/Cpu";
 import words from "../data/words.json";
 import { PowerBar } from "../classes/PowerBar";
 import { HealthBar } from "../classes/HealthBar";
+import {
+  onPlayerJoin,
+  insertCoin,
+  myPlayer,
+  setState,
+  getState,
+} from "playroomkit";
+
 let gameOver = true;
 let playerOne;
 let playerTwo; // TODO: figure out how to implement multiplayer & CPU
@@ -14,10 +22,12 @@ let curWord = ""; //holds the state of the current word that the player is typin
 let wordBoard; //displays the current word
 /* variables to change to dynamic */
 // let multiplayer = false;
-let wordList = getWordList();
+let wordList = [];
 let mode = "single";
+let isHost;
 export class Game extends Scene {
-  init(data) {
+  multiplayerAttackDelay = false;
+  async init(data) {
     data.mode == "single" || data.mode == "multi"
       ? (this.mode = data.mode)
       : (this.mode = "single");
@@ -25,23 +35,35 @@ export class Game extends Scene {
       ? (this.power = data.power)
       : (this.power = powerData.powers[0]);
     if (this.mode == "multi") {
-      if (data.players.length <= 1) {
-        this.mode = "single";
-      } else {
+      //if 2 valid players, set mode to multiplayer
+      if (
+        getState("hostPlayer") !== undefined &&
+        getState("connectedPlayer") !== undefined
+      ) {
         mode = "multi";
-        this.players = data.players;
+        this.mode = "multi";
         this.isHost = data.isHost;
-        if (this.isHost == true) {
-          this.MultiplayerWordList = wordList;
-        }
-      }
+        isHost = data.isHost;
+        wordList = await getState("wordList");
+        //fallback if undefined
+        if (wordList == undefined) wordList = getState("hostListFallback");
+      } else this.mode = "single";
     }
+    this.mode == "single" && typeof data.difficulty != "undefined"
+      ? (this.difficulty = data.difficulty)
+      : (this.difficulty = 2);
   }
   constructor(title = "Game") {
     super(title);
   }
-  create() {
-    curWord = wordList[0];
+  async create() {
+    if (this.mode == "single") {
+      wordList = getWordList();
+    }
+    if (wordList[0] !== undefined) curWord = wordList[0];
+    else curWord = "holder"; //will be changed later, sometimes multiplayer wordlist state is still loading here.
+    //If connected player cannot retrieve same list from host, try loading the fall back list. If all else fails, generate new list
+
     // this.scale.startFullscreen();
     const screenCenterX =
       this.cameras.main.worldView.x + this.cameras.main.width / 2;
@@ -62,15 +84,14 @@ export class Game extends Scene {
       .setStrokeStyle(2, 0x000000)
       .setOrigin(0.5);
 
-    this.createPlayers(curWord);
+    await this.createPlayers(curWord);
     this.overlay.alpha = 0.25;
 
     this.cameras.main.setBackgroundColor(0x808080);
-
-    console.log(this.sys.game.scale.gameSize);
     /*Create players and player assets (health bars, power bars)*/
     playerOne.target = playerTwo;
     playerTwo.target = playerOne;
+
     // let wordBackgorund = this.add.rectangle(
     //   screenCenterX,
     //   screenCenterY - 200,
@@ -89,21 +110,9 @@ export class Game extends Scene {
         align: "center",
       })
       .setOrigin(0.5);
-
-    /* 
-    Here we will create our watcher for keyboard input. We will use the handler function handleKeyboardInput() to decide what to do next.
-    This does not need to be in the update method because we are creating a new watcher that will be constantly listening for input. 
-    Thus, it only needs to be created once at the beginning of the game. 
-    */
-
     //change variables for multiplayer
-    if (this.mode == "multi") {
-      const list = playerOne.multiplayerData.state.getState("wordList");
-      wordList = list;
-      playerOne.curWord = list[0];
-      playerTwo.curWord = list[0];
-      curWord = list[0];
-    }
+
+    //Create a timer and start game after
     this.timedEvent = this.time.delayedCall(
       1000,
       () => {
@@ -128,10 +137,23 @@ export class Game extends Scene {
       [],
       this
     );
+    if (this.mode == "multi") {
+      // final fallback if connected player cannot retrieve same list from host
+      if (typeof wordList == "undefined" || wordList[0] == undefined)
+        wordList = getWordList();
+      curWord = wordList[0];
+      playerOne.curWord = curWord;
+      playerTwo.curWord = curWord;
+    }
     this.timedEvent = this.time.delayedCall(
       4000,
       () => {
         wordBoard.setText(curWord);
+        /* 
+    Here we will create our watcher for keyboard input. We will use the handler function handleKeyboardInput() to decide what to do next.
+    This does not need to be in the update method because we are creating a new watcher that will be constantly listening for input. 
+    Thus, it only needs to be created once at the beginning of the game. 
+    */
         this.input.keyboard.on("keydown", handleKeyboardInput, this);
         gameOver = false;
       },
@@ -141,14 +163,30 @@ export class Game extends Scene {
   }
   update() {
     if (gameOver == true) return;
-
+    wordBoard.setText(playerOne.curWord); //constantly updates the display of the current word
+    updatePlayerStats(playerOne);
     if (this.mode == "multi") {
-      wordBoard.setText(playerOne.curWord); //constantly updates the display of the current word
-      // updateMultiPlayerStats();
-    } else {
-      wordBoard.setText(playerOne.curWord); //constantly updates the display of the current word
-      updatePlayerStats(playerOne);
-      updatePlayerStats(playerTwo);
+      //get player two stats
+      if (this.isHost == true) {
+        playerTwo.energy = getState("connectedPlayerEnergy");
+      } else {
+        playerTwo.energy = getState("hostPlayerEnergy");
+      }
+    }
+    updatePlayerStats(playerTwo);
+    if (
+      this.mode == "multi" &&
+      playerTwo.energy == playerTwo.maxPower &&
+      this.multiplayerAttackDelay == false
+    ) {
+      this.multiplayerAttackDelay = true;
+      playerTwo.attack(playerTwo.target);
+      playerTwo.energy = 0;
+      if (isHost == true) setState("connectedPlayerEnergy", 0);
+      else setState("hostPlayerEnergy", 0);
+      setTimeout(() => {
+        this.multiplayerAttackDelay = false;
+      }, 1000);
     }
   }
   gameOver(winningPlayer) {
@@ -186,58 +224,41 @@ export class Game extends Scene {
       playerTwo
     );
   }
-  createPlayers(curWord) {
+  async createPlayers(curWord) {
     if (this.mode == "multi") {
-      // multiplayer = true;
-      console.log(this.players);
-      //if is host , then playerOne = player who is not host
-      let playerOnePre;
-      let playerTwoPre;
       if (this.isHost == true) {
-        if (this.players[0].isHost == true) {
-          playerOnePre = this.players[0];
-          playerTwoPre = this.players[1];
-        } else {
-          playerOnePre = this.players[1];
-          playerTwoPre = this.players[0];
-        }
-        console.log(playerTwoPre.power);
+        playerOne = createPlayer(
+          this,
+          await getState("hostPlayerPower"),
+          470,
+          390,
+          curWord,
+          true
+        );
+        playerTwo = createMultiPlayerTwo(
+          this,
+          await getState("connectedPlayerPower"),
+          this.sys.game.scale.gameSize.width - 200,
+          380,
+          curWord
+        );
+      } else {
+        playerOne = createPlayer(
+          this,
+          await getState("connectedPlayerPower"),
+          470,
+          390,
+          curWord,
+          true
+        );
+        playerTwo = createMultiPlayerTwo(
+          this,
+          await getState("hostPlayerPower"),
+          this.sys.game.scale.gameSize.width - 200,
+          380,
+          curWord
+        );
       }
-      //if !host , then playerOne = player who is not host
-      else {
-        if (this.players[0].isHost == false) {
-          playerOnePre = this.players[0];
-          playerTwoPre = this.players[1];
-        } else {
-          playerOnePre = this.players[1];
-          playerTwoPre = this.players[0];
-        }
-      }
-
-      playerOne = createPlayer(this, this.power, 470, 390, curWord, true);
-      playerTwo = createPlayer(
-        this,
-        playerTwoPre.power,
-        900,
-        390,
-        curWord,
-        true
-      );
-      playerOne.multiplayerData = playerOnePre;
-      playerTwo.multiplayerData = playerTwoPre;
-      console.log(playerOne);
-      console.log(playerTwo);
-      //if its the host set the word list for both players
-      playerOne.multiplayerData.state.setState(
-        "wordList",
-        this.MultiplayerWordList
-      );
-      playerTwo.multiplayerData.state.setState(
-        "wordList",
-        this.MultiplayerWordList
-      );
-      console.log(playerOne.multiplayerData.state);
-      console.log(playerTwo.multiplayerData.state);
     } else {
       playerOne = createPlayer(this, this.power, 470, 390, curWord, true);
       playerTwo = createCpu(
@@ -245,16 +266,17 @@ export class Game extends Scene {
         getRandomPower(),
         this.sys.game.scale.gameSize.width - 200,
         380,
-        curWord
+        curWord,
+        this.difficulty
       );
     }
+    playerTwo.flipX = true;
   }
 }
 
 /* Creation logic */
 
-function createPlayer(scene, power, x, y, curWord, firstPlayer) {
-  console.log(curWord);
+function createPlayer(scene, power, x, y, curWord, firstPlayer = true) {
   const player = new Player(scene, power, x, y, curWord);
   player.healthBar = new HealthBar(
     scene,
@@ -280,6 +302,32 @@ function createPlayer(scene, power, x, y, curWord, firstPlayer) {
   player.curWordIndex = 0;
   return player;
 }
+function createMultiPlayerTwo(scene, power, x, y, curWord, firstPlayer) {
+  const player = new Player(scene, power, x, y, curWord);
+  player.healthBar = new HealthBar(
+    scene,
+    x / 2.5,
+    100,
+    400,
+    30,
+    0xffffff,
+    firstPlayer
+  );
+  player.healthBar.create();
+  player.powerBar = new PowerBar(
+    scene,
+    x / 2.5 + 180,
+    200,
+    20,
+    200,
+    0xffffff,
+    player.maxPower
+  );
+  player.powerBar.create();
+  player.curWord = curWord;
+  player.curWordIndex = 0;
+  return player;
+}
 function createCpu(scene, power, x, y, curWord) {
   const cpu = new Cpu(scene, power, x, y, curWord, false);
   cpu.healthBar = new HealthBar(scene, x / 2.5, 100, 400, 30, 0xffffff);
@@ -300,17 +348,14 @@ function createCpu(scene, power, x, y, curWord) {
 }
 
 function updatePlayerStats(player) {
-  // console.log(player.healthBar);
-  // console.log(player.curWord);
   player.healthBar.updateGraphics(player.health);
   player.powerBar.updateGraphics(player.energy);
 }
 
 /*Game logic*/
 function handleKeyboardInput(event, player = playerOne) {
-  console.log(player.curWord);
-  if (gameOver == true) return;
   console.log(event.key);
+  if (gameOver == true) return;
   //check if input is valid letter in alphabet
   if (!event.key.match(/[a-z]/i)) return invalidInput(player);
   // check if input is correct
@@ -321,7 +366,12 @@ function handleKeyboardInput(event, player = playerOne) {
 }
 function invalidInput(player) {
   player.energy = 0;
-  console.log("invalid input");
+  /*on multiplayer, update energy state for playerOne via playroom as well (only player one can have a keyboard input via multiplayer, 
+  both are player one one their own systems) */
+  if (mode == "multi") {
+    if (isHost == true) setState("hostPlayerEnergy", player.energy);
+    else setState("connectedPlayerEnergy", player.energy);
+  }
 }
 
 /**
@@ -331,23 +381,23 @@ function invalidInput(player) {
  * If the player reaches their max power level on that attack, they attack the other player.
  */
 function validInput(player) {
+  if (gameOver == true) return;
   player.curWord = player.curWord.substring(1);
-  console.log("valid input");
   if (player.curWord.length == 0) {
     let newWord = getRandomWord();
     if (mode == "multi") {
-      let list = player.multiplayerData.state.getState("wordList");
+      let list = getState("wordList");
       // generate new word
       list.push(newWord);
-      playerOne.multiplayerData.state.setState("wordList", list);
-      playerTwo.multiplayerData.state.setState("wordList", list);
+      setState("wordList", list);
       //get next word from list
       player.curWordIndex++;
       player.curWord = list[player.curWordIndex];
       player.energy++;
-      console.log(player.energy, player.maxPower);
+      if (isHost == true) setState("hostPlayerEnergy", player.energy);
+      else setState("connectedPlayerEnergy", player.energy);
+
       if (player.energy == player.maxPower) {
-        console.log("max");
         player.attack(player.target);
         player.energy = 0;
       }
@@ -358,9 +408,7 @@ function validInput(player) {
       player.curWordIndex++;
       player.curWord = wordList[player.curWordIndex];
       player.energy++;
-      console.log(player.energy, player.maxPower);
       if (player.energy == player.maxPower) {
-        console.log("max");
         player.attack(player.target);
         player.energy = 0;
       }

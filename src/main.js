@@ -3,10 +3,9 @@ import { Game } from "./scenes/Game";
 import { GameOver } from "./scenes/GameOver";
 import { MainMenu } from "./scenes/MainMenu";
 import { MultiPlayerLobby } from "./scenes/MultiPlayerLobby";
-import { MultiPlayerGame } from "./scenes/MultiPlayerGame";
-import { SinglePlayerGame } from "./scenes/SinglePlayerGame";
 import { Preloader } from "./scenes/Preloader";
 import { ChoosePower } from "./scenes/ChoosePower";
+import { CpuDifficultySelector } from "./scenes/CpuDifficultySelector";
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 // const config = {
@@ -35,8 +34,7 @@ const config = {
     Boot,
     Preloader,
     MainMenu,
-    // SinglePlayerGame,
-    // MultiPlayerGame,
+    CpuDifficultySelector,
     MultiPlayerLobby,
     Game,
     ChoosePower,
