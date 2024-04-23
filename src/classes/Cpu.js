@@ -45,7 +45,7 @@ export class Cpu extends Player {
   writeWord() {
     console.log('starting writeWord')
     let CPM = translateDifficulty(this.difficulty);
-    CPM += 50; //They all are a bit too weak. Might need to be adjusted.
+    // CPM += 50; //They all are a bit too weak. Might need to be adjusted.
     let ms = 60000 / CPM;
     setInterval(() => {
       if(!this.curWord || this.gameOver == true) return;

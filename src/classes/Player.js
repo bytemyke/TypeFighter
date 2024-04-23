@@ -16,6 +16,7 @@ export class Player extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
     this.setOrigin(1, 0);
     this.setDepth(3);
+    this.dmg = power.dmg;
   }
   create() {
     // scene.add.existing(this);
@@ -28,6 +29,9 @@ export class Player extends Phaser.GameObjects.Sprite {
    * @param {Object} target The target to attack.
    */
   attack(target) {
+    if(this.power.name.toLowerCase() == "theft"){
+      this.health += 2;
+    }
     target.health -= this.dmg;
     if (target.health > 0) return;
     else {
