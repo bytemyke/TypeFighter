@@ -1,25 +1,20 @@
+/**
+ * The entry point of the game.
+ *
+ * This file sets up the Phaser game configuration and instantiates the game.
+ * It also sets up the scenes and provides a single
+ * export for the game.
+ */
 import { Boot } from "./scenes/Boot";
 import { Game } from "./scenes/Game";
-import { GameOver } from "./scenes/GameOver";
 import { MainMenu } from "./scenes/MainMenu";
 import { MultiPlayerLobby } from "./scenes/MultiPlayerLobby";
 import { Preloader } from "./scenes/Preloader";
 import { ChoosePower } from "./scenes/ChoosePower";
 import { CpuDifficultySelector } from "./scenes/CpuDifficultySelector";
-//  Find out more information about the Game Config at:
-//  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
-// const config = {
-//   type: Phaser.AUTO,
-//   width: window.innerWidth,
-//   height: window.innerHeight,
-//   parent: "game-container",
-//   backgroundColor: "#028af8",
-//   scale: {
-//     // mode: Phaser.Scale.FIT,
-//     autoCenter: Phaser.Scale.CENTER_BOTH,
-//   },
-//   scene: [Boot, Preloader, MainMenu, Game, Multiplayer],
-// };
+import { Instructions } from "./scenes/Instructions";
+
+//Our game configuration
 const config = {
   type: Phaser.AUTO,
   width: 1920,
@@ -34,14 +29,15 @@ const config = {
     Boot,
     Preloader,
     MainMenu,
+    Instructions,
+    ChoosePower,
     CpuDifficultySelector,
     MultiPlayerLobby,
     Game,
-    ChoosePower,
   ],
+  //dev tip : use preloader / x, where x is the scene you want to test
   // scene: [ Preloader,Game],
 };
-// 1280x720
-// width: window.innerWidth,
-// height: window.innerHeight,
+
 export default new Phaser.Game(config);
+

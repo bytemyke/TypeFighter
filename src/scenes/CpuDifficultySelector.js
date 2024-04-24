@@ -1,5 +1,6 @@
 import { Scene } from "phaser";
 import { createButton } from "../functions/createButton";
+import { createMuteOption } from "../functions/createMuteOption";
 
 //{ power: power, mode: "single" }
 export class CpuDifficultySelector extends Scene {
@@ -63,5 +64,7 @@ export class CpuDifficultySelector extends Scene {
       x: cellWidth / 2,
       y: screenCenterY + 300 - cellHeight,
     });
+    createMuteOption(this);
+
   }
 }

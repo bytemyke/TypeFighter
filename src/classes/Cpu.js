@@ -24,16 +24,18 @@ export class Cpu extends Player {
    * constructor for the CPU class
    * @constructor
    * @param {Phaser.Scene} scene - The current scene
-   * @param {string} playerType - The player type (CPU or PLAYER)
+   * @param {string} power - The selected power
    * @param {number} x - The x position of the player
    * @param {number} y - The y position of the player
    * @param {number} width - The width of the player
    * @param {number} height - The height of the player
    * @param {number} difficulty - The difficulty of the CPU player
    */
-  constructor(scene, playerType, x, y, width, height, difficulty) {
+  constructor(scene, power, x, y, width, height, difficulty) {
     console.log('cpu created');
-    super(scene, playerType, x, y, width, height);
+    super(scene, power, x, y, width, height);
+    console.log("cpu power ", power);
+    this.power = power;
     this.difficulty = difficulty;
     this.scene = scene;
     this.writeWord();
@@ -47,7 +49,7 @@ export class Cpu extends Player {
     let CPM = translateDifficulty(this.difficulty);
     // CPM += 50; //They all are a bit too weak. Might need to be adjusted.
     let ms = 60000 / CPM;
-    setInterval(() => {
+    this.interval = setInterval(() => {
       if(!this.curWord || this.gameOver == true) return;
       if(this.canInput == true)
         this.scene.cpuInput(this.curWord[0]);
@@ -63,10 +65,10 @@ export class Cpu extends Player {
 function translateDifficulty(difficulty) {
   //basing CPM based on data from https://www.typingpal.com/en/documentation/school-edition/pedagogical-resources/typing-speed
   switch (difficulty) {
-    case 1: return Phaser.Math.Between(180, 300);
-    case 2: return Phaser.Math.Between(400, 500);
-    case 3: return Phaser.Math.Between(550, 750);
-    case 4: return Phaser.Math.Between(800, 1000);
+    case 1: return Phaser.Math.Between(50, 100);
+    case 2: return Phaser.Math.Between(150, 300);
+    case 3: return Phaser.Math.Between(500, 750);
+    case 4: return Phaser.Math.Between(800, 900);
     default: return 200;
   }
 

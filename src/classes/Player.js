@@ -6,7 +6,7 @@ export class Player extends Phaser.GameObjects.Sprite {
   maxPower = 3;
   constructor(scene, power, x, y, curWord) {
     const route = "/assets/powers/" + power.name;
-    super(scene, x, y, power.name + "init");
+    super(scene, x, y, power.name.toLowerCase() + "_idle");
     this.scene = scene;
     this.power = power;
     this.maxPower = power.maxPower;
@@ -18,7 +18,19 @@ export class Player extends Phaser.GameObjects.Sprite {
     this.setDepth(3);
     this.dmg = power.dmg;
   }
-  create() {
+  create(power) {
+    console.log("creating animation for ", this)
+    console.log(power);
+    let idleAnimationKey = power.name.toLowerCase() + "_idle";
+    console.log(idleAnimationKey)
+    this.scene.anims.create({
+      key: idleAnimationKey,
+      frameRate: 24,
+      frames: this.scene.anims.generateFrameNumbers(idleAnimationKey, { start: this.power.animations.idle.startFrame , end: this.power.animations.idle.endFrame }),
+      repeat: -1,
+      yoyo: true
+    });
+    this.play(idleAnimationKey);
     // scene.add.existing(this);
     // this.setScale(6);
     // this.setOrigin(0.5, 0.5);
@@ -29,7 +41,7 @@ export class Player extends Phaser.GameObjects.Sprite {
    * @param {Object} target The target to attack.
    */
   attack(target) {
-    if(this.power.name.toLowerCase() == "theft"){
+    if (this.power.name.toLowerCase() == "theft") {
       this.health += 2;
     }
     target.health -= this.dmg;

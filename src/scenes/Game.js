@@ -7,6 +7,8 @@ import { Cpu } from "../classes/Cpu";
 import words from "../data/words.json";
 import { PowerBar } from "../classes/PowerBar";
 import { HealthBar } from "../classes/HealthBar";
+import { createMuteOption } from "../functions/createMuteOption";
+import {flash} from "../functions/flash";
 import {
   onPlayerJoin,
   insertCoin,
@@ -28,6 +30,7 @@ let isHost;
 export class Game extends Scene {
   multiplayerAttackDelay = false;
   async init(data) {
+    this.preData = data;
     data.mode == "single" || data.mode == "multi"
       ? (this.mode = data.mode)
       : (this.mode = "single");
@@ -91,15 +94,6 @@ export class Game extends Scene {
     /*Create players and player assets (health bars, power bars)*/
     playerOne.target = playerTwo;
     playerTwo.target = playerOne;
-
-    // let wordBackgorund = this.add.rectangle(
-    //   screenCenterX,
-    //   screenCenterY - 200,
-    //   600,
-    //   100,
-    //   0x000000
-    // );
-    // wordBackgorund.alpha = 0.15;
     wordBoard = this.add
       .text(screenCenterX, screenCenterY - 200, 3, {
         fontFamily: "Arial Black",
@@ -160,6 +154,7 @@ export class Game extends Scene {
       [],
       this
     );
+    createMuteOption(this);
   }
   update() {
     if (gameOver == true) return;
@@ -190,11 +185,12 @@ export class Game extends Scene {
     }
   }
   gameOver(winningPlayer) {
-    if (gameOver == true) return;
+    gameOver = true;
+    if(this.mode == "single") clearInterval(playerTwo.interval);
     let text;
     winningPlayer == playerOne
       ? (text = this.add.text(512, 384, "YOU WIN!!!", {
-          fontFamily: "Arial Black",
+          fontFamily: "Caveat",
           fontSize: 50,
           color: "#00FF7F",
           stroke: "#000000",
@@ -202,7 +198,7 @@ export class Game extends Scene {
           align: "center",
         }))
       : this.add.text(512, 384, "YOU LOSE", {
-          fontFamily: "Arial Black",
+          fontFamily: "Caveat",
           fontSize: 50,
           color: "#ffffff",
           stroke: "#D2042D",
@@ -210,11 +206,14 @@ export class Game extends Scene {
           align: "center",
         });
     //allow for restart, TODO : change to back to main menu
-    this.input.keyboard.on("keydown", (event) => {
-      if (event.key == "Enter") {
-        this.scene.start("Game");
-      }
-    });
+    // this.input.keyboard.on("keydown", (event) => {
+    //   if (event.key == "Enter") {
+    //     this.scene.start("Game");
+    //   }
+    // });
+  }
+  static  flash_text(){
+      // flash(player.scene, wordBoard);
   }
   cpuInput(key) {
     handleKeyboardInput(
@@ -225,12 +224,13 @@ export class Game extends Scene {
     );
   }
   async createPlayers(curWord) {
+    let pOneX = 650;
     if (this.mode == "multi") {
       if (this.isHost == true) {
         playerOne = createPlayer(
           this,
           await getState("hostPlayerPower"),
-          470,
+          pOneX,
           390,
           curWord,
           true
@@ -246,7 +246,7 @@ export class Game extends Scene {
         playerOne = createPlayer(
           this,
           await getState("connectedPlayerPower"),
-          470,
+          pOneX,
           390,
           curWord,
           true
@@ -260,7 +260,7 @@ export class Game extends Scene {
         );
       }
     } else {
-      playerOne = createPlayer(this, this.power, 470, 390, curWord, true);
+      playerOne = createPlayer(this, this.power, pOneX, 390, curWord, true);
       playerTwo = createCpu(
         this,
         getRandomPower(),
@@ -278,6 +278,7 @@ export class Game extends Scene {
 
 function createPlayer(scene, power, x, y, curWord, firstPlayer = true) {
   const player = new Player(scene, power, x, y, curWord);
+  player.create(power);
   player.healthBar = new HealthBar(
     scene,
     100,
@@ -304,6 +305,7 @@ function createPlayer(scene, power, x, y, curWord, firstPlayer = true) {
 }
 function createMultiPlayerTwo(scene, power, x, y, curWord, firstPlayer) {
   const player = new Player(scene, power, x, y, curWord);
+  player.create(power);
   player.healthBar = new HealthBar(
     scene,
     x / 2.5,
@@ -330,6 +332,7 @@ function createMultiPlayerTwo(scene, power, x, y, curWord, firstPlayer) {
 }
 function createCpu(scene, power, x, y, curWord) {
   const cpu = new Cpu(scene, power, x, y, curWord, false);
+  cpu.create(power);
   cpu.healthBar = new HealthBar(scene, x / 2.5, 100, 400, 30, 0xffffff);
   cpu.healthBar.create();
   cpu.powerBar = new PowerBar(
@@ -355,7 +358,11 @@ function updatePlayerStats(player) {
 /*Game logic*/
 function handleKeyboardInput(event, player = playerOne) {
   console.log(event.key);
-  if (gameOver == true) return;
+  if (gameOver == true) {
+    if (event.key == "Enter") this.scene.start("Game", this.preData);
+    else if (event.key == "Escape") this.scene.start("MainMenu");
+    else return;
+  }
   //check if input is valid letter in alphabet
   if (!event.key.match(/[a-z]/i)) return invalidInput(player);
   // check if input is correct
@@ -365,7 +372,9 @@ function handleKeyboardInput(event, player = playerOne) {
   return invalidInput(player);
 }
 function invalidInput(player) {
+  console.log(Game)
   player.energy = 0;
+  flash(player.scene, wordBoard, 0xFF0000, 100);
   /*on multiplayer, update energy state for playerOne via playroom as well (only player one can have a keyboard input via multiplayer, 
   both are player one one their own systems) */
   if (mode == "multi") {

@@ -2,15 +2,45 @@
   "powers": [
     {
       "name": "Sorcery",
-      "maxPower": 12,
-      "dmg": 34,
-      "description": "Deals a massive amount of damage, but requires massive amount of energy to use power"
+      "maxPower": 8,
+      "dmg": 30,
+      "description": "Deals a massive amount of damage, but requires massive amount of energy to use power",
+      "frames" : 23,
+      "animations" : {
+        "idle": {
+          "startFrame": 0,
+          "endFrame": 20
+        },
+        "attack": {
+          "startFrame": 0,
+          "endFrame": 1
+        },
+        "death": {
+          "startFrame": 0,
+          "endFrame": 1
+        }
+      }
+      
     },
     {
       "name": "Theft",
       "maxPower": 4,
-      "dmg": 12,
-      "description": "Deals less damage, but steals 2 health from opponents each time you attack"
+      "dmg": 10,
+      "description": "Deals less damage, but steals 2 health from opponents each time you attack",
+      "animations" : {
+        "idle": {
+          "startFrame": 0,
+          "endFrame": 23
+        },
+        "attack": {
+          "startFrame": 0,
+          "endFrame": 1
+        },
+        "death": {
+          "startFrame": 0,
+          "endFrame": 1
+        }
+      }
     }
   ]
 }

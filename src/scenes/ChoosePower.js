@@ -4,6 +4,9 @@
  */
 import { Scene } from "phaser";
 import powerData from "../data/power.json";
+import { createButton } from "../functions/createButton";
+import { createMuteOption } from "../functions/createMuteOption";
+
 export class ChoosePower extends Scene {
   /**
    * The mode of the game, either single or multiplayer.
@@ -38,6 +41,8 @@ export class ChoosePower extends Scene {
     this.background = this.add
       .image(screenCenterX, screenCenterY, "background")
       .setOrigin(0.5);
+    let backButton = createButton(110, 100, "Back <---", this, "MainMenu", {});
+    backButton.setScale(0.5);
     const header = this.add
       .text(screenCenterX, screenCenterY - 350, "CHOOSE YOUR POWER ", {
         fontFamily: '"Caveat"',
@@ -68,6 +73,8 @@ export class ChoosePower extends Scene {
       x: screenCenterX - cellWidth,
       y: screenCenterY + 100 - cellHeight,
     });
+    createMuteOption(this);
+
   }
 
   /**
@@ -76,7 +83,10 @@ export class ChoosePower extends Scene {
    */
   startGame(power) {
     this.mode == "single"
-      ? this.scene.start("CpuDifficultySelector", { power: power, mode: "single" })
+      ? this.scene.start("CpuDifficultySelector", {
+          power: power,
+          mode: "single",
+        })
       : this.scene.start("MultiPlayerLobby", { power: power, mode: "multi" });
     return;
   }
@@ -109,6 +119,27 @@ export class ChoosePower extends Scene {
         align: "center",
       })
       .setOrigin(0.5, 0.5);
+
+    let dmg = scene.add
+      .text(250, -100, "DMG : " + power.dmg + " ", {
+        fontFamily: '"Caveat"',
+        fontSize: 22,
+        color: "#000000",
+        stroke: "#FFF",
+        strokeThickness: 2,
+        align: "center",
+      })
+      .setOrigin(1, 1);
+    let maxPower = scene.add
+      .text(250, -75, "Required Energy : " + power.maxPower + " ", {
+        fontFamily: '"Caveat"',
+        fontSize: 22,
+        color: "#000000",
+        stroke: "#FFF",
+        strokeThickness: 2,
+        align: "center",
+      })
+      .setOrigin(1, 1);
     powerOption
       .setSize(cellWidth - 40, cellHeight - 40)
       .setInteractive()
@@ -133,7 +164,7 @@ export class ChoosePower extends Scene {
       }
     );
     // startGame(power)
-    powerOption.add([background, name, avatarImg, description]);
+    powerOption.add([background, name, dmg, maxPower, avatarImg, description]);
 
     return powerOption;
   }

@@ -24,16 +24,16 @@ export class Preloader extends Scene {
   }
 
   preload() {
-    //  Load the assets for the game - Replace with your own assets
     this.load.setPath("assets");
     this.load.image("fight_background", "bg_fight.png");
+    this.load.image("muted_audio", "font_awesome_icons/muted.svg");
+    this.load.image("audio", "font_awesome_icons/audio.svg");
 
     this.load.image("logo", "logo.png");
     this.load.spritesheet("button", "button/button_hover.png", {
       frameWidth: 450,
       frameHeight: 200,
     });
-    // this.load.image("button", "/button/button_init.png");
     this.load.addFile(new WebFontFile(this.load, "Caveat"));
     powerData.powers.forEach((power) => {
       const powerFileExtension = power.name.toLowerCase();
@@ -45,14 +45,15 @@ export class Preloader extends Scene {
           powerFileExtension +
           "_head.png"
       );
-      this.load.image(
-        power.name + "init",
-        "powers/" +
-          powerFileExtension +
-          "/sprite/" +
-          powerFileExtension +
-          "_init.png"
-      );
+       });
+    /*Load all spritesheets for powers*/
+    this.load.spritesheet("sorcery_idle", "powers/sorcery/sprite/sorcery_idle.png", {
+      frameWidth: 450,
+      frameHeight: 650,
+    });
+    this.load.spritesheet("theft_idle", "powers/theft/sprite/theft_idle.png", {
+      frameWidth: 450,
+      frameHeight: 650,
     });
     this.load.audio("menu_music", "music/5ARDINNE.ogg");
     this.load.audio("fight_music", "music/TIGERBL00D v2.ogg");
@@ -61,7 +62,8 @@ export class Preloader extends Scene {
   create() {
     //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
     //  For example, you can define global animations here, so we can use them in other scenes.
-
+    this.music = this.sound.add("fight_music", { volume: 0.5, loop: true });
+    this.music.play();
     //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
     this.scene.start("MainMenu");
     // this.scene.start("ChoosePower");
