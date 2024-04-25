@@ -8,7 +8,7 @@ import words from "../data/words.json";
 import { PowerBar } from "../classes/PowerBar";
 import { HealthBar } from "../classes/HealthBar";
 import { createMuteOption } from "../functions/createMuteOption";
-import {flash} from "../functions/flash";
+import { flash } from "../functions/flash";
 import {
   onPlayerJoin,
   insertCoin,
@@ -27,6 +27,7 @@ let wordBoard; //displays the current word
 let wordList = [];
 let mode = "single";
 let isHost;
+let errorSound; // hold the error sound. Will be played when an invalid input is made
 export class Game extends Scene {
   multiplayerAttackDelay = false;
   async init(data) {
@@ -104,7 +105,8 @@ export class Game extends Scene {
         align: "center",
       })
       .setOrigin(0.5);
-    //change variables for multiplayer
+    errorSound = this.sound.add("error", { volume: 0.4 });
+    createMuteOption(this);
 
     //Create a timer and start game after
     this.timedEvent = this.time.delayedCall(
@@ -154,7 +156,6 @@ export class Game extends Scene {
       [],
       this
     );
-    createMuteOption(this);
   }
   update() {
     if (gameOver == true) return;
@@ -186,7 +187,7 @@ export class Game extends Scene {
   }
   gameOver(winningPlayer) {
     gameOver = true;
-    if(this.mode == "single") clearInterval(playerTwo.interval);
+    if (this.mode == "single") clearInterval(playerTwo.interval);
     let text;
     winningPlayer == playerOne
       ? (text = this.add.text(512, 384, "YOU WIN!!!", {
@@ -212,9 +213,7 @@ export class Game extends Scene {
     //   }
     // });
   }
-  static  flash_text(){
-      // flash(player.scene, wordBoard);
-  }
+
   cpuInput(key) {
     handleKeyboardInput(
       {
@@ -372,9 +371,10 @@ function handleKeyboardInput(event, player = playerOne) {
   return invalidInput(player);
 }
 function invalidInput(player) {
-  console.log(Game)
+  console.log(Game);
   player.energy = 0;
-  flash(player.scene, wordBoard, 0xFF0000, 100);
+  errorSound.play();
+  flash(player.scene, wordBoard, 0xff0000, 100);
   /*on multiplayer, update energy state for playerOne via playroom as well (only player one can have a keyboard input via multiplayer, 
   both are player one one their own systems) */
   if (mode == "multi") {

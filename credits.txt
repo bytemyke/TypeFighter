@@ -2,3 +2,4 @@ Code : ByteMyke
 Art : Dot.Bean
 Music : Kerflumpterbumpter Mcsnarkle (https://kfbstudios.itch.io/fishticuffs)
 Music Icon : Font Awesome by Dave Gandy - http://fontawesome.io
+Error SFX : remaxim - https://opengameart.org/content/bad-sound-2

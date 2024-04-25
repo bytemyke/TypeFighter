@@ -69,6 +69,7 @@ export class Preloader extends Scene {
     );
     this.load.audio("menu_music", "music/5ARDINNE.ogg");
     this.load.audio("fight_music", "music/TIGERBL00D v2.ogg");
+    this.load.audio("error", "sfx/error.wav");
   }
 
   create() {
