@@ -45,16 +45,28 @@ export class Preloader extends Scene {
           powerFileExtension +
           "_head.png"
       );
-       });
-    /*Load all spritesheets for powers*/
-    this.load.spritesheet("sorcery_idle", "powers/sorcery/sprite/sorcery_idle.png", {
-      frameWidth: 450,
-      frameHeight: 650,
     });
+    /*Load all spritesheets for powers*/
+    this.load.spritesheet(
+      "sorcery_idle",
+      "powers/sorcery/sprite/sorcery_idle.png",
+      {
+        frameWidth: 450,
+        frameHeight: 650,
+      }
+    );
     this.load.spritesheet("theft_idle", "powers/theft/sprite/theft_idle.png", {
       frameWidth: 450,
       frameHeight: 650,
     });
+    this.load.spritesheet(
+      "strength_idle",
+      "powers/strength/sprite/strength_idle.png",
+      {
+        frameWidth: 450,
+        frameHeight: 650,
+      }
+    );
     this.load.audio("menu_music", "music/5ARDINNE.ogg");
     this.load.audio("fight_music", "music/TIGERBL00D v2.ogg");
   }

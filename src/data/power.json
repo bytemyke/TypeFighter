@@ -5,8 +5,8 @@
       "maxPower": 8,
       "dmg": 30,
       "description": "Deals a massive amount of damage, but requires massive amount of energy to use power",
-      "frames" : 23,
-      "animations" : {
+      "frames": 23,
+      "animations": {
         "idle": {
           "startFrame": 0,
           "endFrame": 20
@@ -20,14 +20,33 @@
           "endFrame": 1
         }
       }
-      
     },
     {
       "name": "Theft",
       "maxPower": 4,
       "dmg": 10,
       "description": "Deals less damage, but steals 2 health from opponents each time you attack",
-      "animations" : {
+      "animations": {
+        "idle": {
+          "startFrame": 0,
+          "endFrame": 23
+        },
+        "attack": {
+          "startFrame": 0,
+          "endFrame": 1
+        },
+        "death": {
+          "startFrame": 0,
+          "endFrame": 1
+        }
+      }
+    },
+    {
+      "name": "Strength",
+      "maxPower": 6,
+      "dmg": 23,
+      "description": "Deals the almost as much damage as Sorcery, but with less energy cost.",
+      "animations": {
         "idle": {
           "startFrame": 0,
           "endFrame": 23
