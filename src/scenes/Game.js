@@ -16,7 +16,8 @@ import {
   setState,
   getState,
 } from "playroomkit";
-
+let screenCenterX;
+let screenCenterY;
 let gameOver = true;
 let playerOne;
 let playerTwo; // TODO: figure out how to implement multiplayer & CPU
@@ -69,9 +70,8 @@ export class Game extends Scene {
     //If connected player cannot retrieve same list from host, try loading the fall back list. If all else fails, generate new list
 
     // this.scale.startFullscreen();
-    const screenCenterX =
-      this.cameras.main.worldView.x + this.cameras.main.width / 2;
-    const screenCenterY =
+    screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
+    screenCenterY =
       this.cameras.main.worldView.y + this.cameras.main.height / 2;
     this.background = this.add
       .image(screenCenterX, screenCenterY, "fight_background")
@@ -105,7 +105,7 @@ export class Game extends Scene {
         align: "center",
       })
       .setOrigin(0.5);
-    errorSound = this.sound.add("error", { volume: 0.4 });
+    errorSound = this.sound.add("error", { volume: 0.5 });
     createMuteOption(this);
 
     //Create a timer and start game after
@@ -186,26 +186,52 @@ export class Game extends Scene {
     }
   }
   gameOver(winningPlayer) {
+    wordBoard.setText("");
     gameOver = true;
     if (this.mode == "single") clearInterval(playerTwo.interval);
     let text;
     winningPlayer == playerOne
-      ? (text = this.add.text(512, 384, "YOU WIN!!!", {
-          fontFamily: "Caveat",
-          fontSize: 50,
-          color: "#00FF7F",
-          stroke: "#000000",
-          strokeThickness: 8,
-          align: "center",
-        }))
-      : this.add.text(512, 384, "YOU LOSE", {
+      ? (text = this.add.text(
+          screenCenterX,
+          screenCenterY - 200,
+          "YOU WIN!!!",
+          {
+            fontFamily: "Caveat",
+            fontSize: 80,
+            color: "#00FF7F",
+            stroke: "#000000",
+            strokeThickness: 8,
+            align: "center",
+          }
+        )).setScale(0.5)
+      : this.add
+          .text(screenCenterX, screenCenterY - 200, "YOU LOSE", {
+            fontFamily: "Caveat",
+            fontSize: 80,
+            color: "#ffffff",
+            stroke: "#D2042D",
+            strokeThickness: 8,
+            align: "center",
+          })
+          .setScale(0.5);
+
+    this.add
+      .text(
+        screenCenterX,
+        screenCenterY - 400,
+        `Press Enter for a rematch
+      OR
+      Press Esc to go back to main menu`,
+        {
           fontFamily: "Caveat",
           fontSize: 50,
           color: "#ffffff",
-          stroke: "#D2042D",
+          stroke: "#000000",
           strokeThickness: 8,
           align: "center",
-        });
+        }
+      )
+      .setScale(0.5);
     //allow for restart, TODO : change to back to main menu
     // this.input.keyboard.on("keydown", (event) => {
     //   if (event.key == "Enter") {
@@ -364,7 +390,7 @@ function handleKeyboardInput(event, player = playerOne) {
   }
   //check if input is valid letter in alphabet
   if (!event.key.match(/[a-z]/i)) return invalidInput(player);
-  // check if input is correct
+  // check if input is correctWF
   if (event.key.toLowerCase() == player.curWord[0].toLowerCase())
     return validInput(player);
 
