@@ -4,7 +4,7 @@
       "name": "Sorcery",
       "maxPower": 8,
       "dmg": 30,
-      "description": "Deals a massive amount of damage, but requires massive amount of energy to use power",
+      "description": "Deals a massive amount of damage, but requires massive amount of energy to use power ",
       "frames": 23,
       "animations": {
         "idle": {
@@ -25,7 +25,7 @@
       "name": "Theft",
       "maxPower": 4,
       "dmg": 10,
-      "description": "Deals less damage, but steals 2 health from opponents each time you attack",
+      "description": "Deals less damage, but steals 2 health from opponents each time you attack ",
       "animations": {
         "idle": {
           "startFrame": 0,
@@ -43,9 +43,9 @@
     },
     {
       "name": "Strength",
-      "maxPower": 6,
-      "dmg": 23,
-      "description": "Deals the almost as much damage as Sorcery, but with less energy cost.",
+      "maxPower": 8,
+      "dmg": 24,
+      "description": "Passively blocks 20% of damage received from opponents each time they attack ",
       "animations": {
         "idle": {
           "startFrame": 0,

@@ -10,7 +10,8 @@ For this project I used the [Phaser 3](https://phaser.io/) framework. I also use
 ## Acknowledgements
  - Art , all art was created for this project by [Dot.Bean](https://www.instagram.com/dot.bean/)
  - The music used is from Kerflumpterbumpter Mcsnarkle on [Itch](https://kfbstudios.itch.io/fishticuffs)
- - Several Icons were used from [Font Awesome](http://fontawesome.io)
+ - Volume Icon was is from [Font Awesome](http://fontawesome.io)
+ - Error SFX is from [remaxim](https://opengameart.org/content/bad-sound-2)
  - All of the code, animations, and everything else was done by me, ByteMyke. Feel free to check out my [YouTube channel](https://www.youtube.com/@bytemyke/videos) where I make varios game dev and web dev videos and tutorials!
 
 ## Requirements

@@ -106,7 +106,7 @@ export class ChoosePower extends Scene {
     const avatarImg = scene.add.image(
       -cellWidth / 4,
       -(cellHeight - 50) / 4,
-      power.name + "head"
+      power.name.toLowerCase() + "_head"
     );
     let name = scene.add
       .text(0, -100, power.name + " ", {

@@ -18,10 +18,8 @@ export class MultiPlayerLobby extends Scene {
     super("MultiPlayerLobby");
   }
   create() {
-    console.log(myPlayer());
     // myPlayer().setState("health", 100);
     onPlayerJoin((playerState) => this.addPlayer(playerState));
-    console.log(this.players);
     insertCoin({ gameId: "HoRqDTqmYaXZgFmQvyfV", maxPlayersPerRoom: 2 }).then(
       () => {
         if(isHost() == true){
@@ -36,7 +34,6 @@ export class MultiPlayerLobby extends Scene {
     );
   }
   addPlayer(playerState) {
-    console.log(`${playerState.getProfile().name} joined the game`);
     if (isHost()) {
       setState("hostPlayer", playerState);
       setState("hostPlayerPower", this.power);

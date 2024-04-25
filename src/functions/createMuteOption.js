@@ -8,7 +8,6 @@ export function createMuteOption(scene){
     .on("pointerdown", () => {
         scene.sound.mute == true? scene.sound.mute = false : scene.sound.mute = true;
         scene.sound.mute == true? icon = "audio" : icon ="muted_audio" 
-        console.log(muteButton)
         muteButton.setTexture(icon)
     }).setScale(.25);
 }

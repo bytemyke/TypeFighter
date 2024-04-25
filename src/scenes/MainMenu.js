@@ -28,10 +28,10 @@ export class MainMenu extends Scene {
     this.add
       .text(screenCenterX, 200, "TypeFighter ", {
         fontFamily: "Caveat",
-        fontSize: 200,
+        fontSize: 250,
         color: "#ffffff",
         stroke: "#000000",
-        strokeThickness: 40,
+        strokeThickness: 20,
         align: "center",
       })
       .setOrigin(0.5);

@@ -32,9 +32,7 @@ export class Cpu extends Player {
    * @param {number} difficulty - The difficulty of the CPU player
    */
   constructor(scene, power, x, y, width, height, difficulty) {
-    console.log('cpu created');
     super(scene, power, x, y, width, height);
-    console.log("cpu power ", power);
     this.power = power;
     this.difficulty = difficulty;
     this.scene = scene;
@@ -45,7 +43,6 @@ export class Cpu extends Player {
    * @method
    */
   writeWord() {
-    console.log('starting writeWord')
     let CPM = translateDifficulty(this.difficulty);
     // CPM += 50; //They all are a bit too weak. Might need to be adjusted.
     let ms = 60000 / CPM;
@@ -65,9 +62,9 @@ export class Cpu extends Player {
 function translateDifficulty(difficulty) {
   //basing CPM based on data from https://www.typingpal.com/en/documentation/school-edition/pedagogical-resources/typing-speed
   switch (difficulty) {
-    case 1: return Phaser.Math.Between(50, 100);
-    case 2: return Phaser.Math.Between(150, 300);
-    case 3: return Phaser.Math.Between(500, 750);
+    case 1: return Phaser.Math.Between(20, 40);
+    case 2: return Phaser.Math.Between(150, 250);
+    case 3: return Phaser.Math.Between(500, 600);
     case 4: return Phaser.Math.Between(800, 900);
     default: return 200;
   }

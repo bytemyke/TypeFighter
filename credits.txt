@@ -1,5 +1,7 @@
-Code : ByteMyke
-Art : Dot.Bean
+Created for TypeFighter :
+Code / overall game : ByteMyke (https://www.youtube.com/@bytemyke/videos)
+Art : Dot.Bean (https://www.instagram.com/dot.bean/)
+Used in TypeFighter :
 Music : Kerflumpterbumpter Mcsnarkle (https://kfbstudios.itch.io/fishticuffs)
 Music Icon : Font Awesome by Dave Gandy - http://fontawesome.io
 Error SFX : remaxim - https://opengameart.org/content/bad-sound-2

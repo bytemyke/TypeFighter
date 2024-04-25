@@ -1,3 +1,14 @@
+/**
++ * Game.js
++ * 
++ * This scene is responsible for the gameplay logic of the game. 
++ * It handles keyboard input, generates a list of words to play with, and 
++ * updates the player's stats (power bar, health bar) based on player actions.
++ * 
++ * This scene also handles multiplayer, with a fallback for if a player cannot 
++ * retrieve the same list of words from the host. 
++ * 
++ */
 import { Scene } from "phaser";
 import powerData from "../data/power.json";
 
@@ -10,59 +21,86 @@ import { HealthBar } from "../classes/HealthBar";
 import { createMuteOption } from "../functions/createMuteOption";
 import { flash } from "../functions/flash";
 import {
-  onPlayerJoin,
-  insertCoin,
-  myPlayer,
   setState,
   getState,
+  resetStates,
+  resetPlayersStates,
 } from "playroomkit";
+let preData; // holds the data passed from the Past scene
+let endingGameText; //holds the text that displays when the game is over
+let canLeave = true;
 let screenCenterX;
 let screenCenterY;
-let gameOver = true;
+const powerBarWidth = 125;
+const powerBarHeight = 20;
+let gameOver = true; //game state (set to false after game is created and back to true when game is over)
 let playerOne;
-let playerTwo; // TODO: figure out how to implement multiplayer & CPU
+let playerTwo;
 let curWord = ""; //holds the state of the current word that the player is typing
 let wordBoard; //displays the current word
 /* variables to change to dynamic */
 // let multiplayer = false;
 let wordList = [];
-let mode = "single";
-let isHost;
-let errorSound; // hold the error sound. Will be played when an invalid input is made
+let mode = "single"; //state of game mode. singleplayer or multiplayer.
+let isHost; //determines if user is the host or not. this.isHost
+let errorSound; // holds the error sound. this be played when an invalid input is made
+let waiting = false; //determines if player is waiting for another player to reset
+/*
++ * The Game scene class.
++ * 
++ * This class is responsible for the gameplay logic of the game.
++ * It handles keyboard input, generates a list of words to play with, creates the players, 
++ * and updates the player's stats (power bar, health bar) based on player actions.
++ * 
++ * This scene also handles multiplayer, with a fallback for if a player cannot
++ * retrieve the same list of words from the host.
++ */
 export class Game extends Scene {
   multiplayerAttackDelay = false;
+  /**
++   * Initialize the game scene with the data passed from the Preloader scene.
++   * @param {Object} data - The data passed from the Preloader scene.
++   */
   async init(data) {
-    this.preData = data;
+    preData = data;
     data.mode == "single" || data.mode == "multi"
-      ? (this.mode = data.mode)
-      : (this.mode = "single");
+      ? (mode = data.mode)
+      : (mode = "single");
     typeof data == "object"
       ? (this.power = data.power)
       : (this.power = powerData.powers[0]);
-    if (this.mode == "multi") {
+    if (mode == "multi") {
       //if 2 valid players, set mode to multiplayer
       if (
         getState("hostPlayer") !== undefined &&
         getState("connectedPlayer") !== undefined
       ) {
         mode = "multi";
-        this.mode = "multi";
         this.isHost = data.isHost;
         isHost = data.isHost;
         wordList = await getState("wordList");
         //fallback if undefined
         if (wordList == undefined) wordList = getState("hostListFallback");
-      } else this.mode = "single";
+      } else mode = "single";
     }
-    this.mode == "single" && typeof data.difficulty != "undefined"
+    mode == "single" && typeof data.difficulty != "undefined"
       ? (this.difficulty = data.difficulty)
       : (this.difficulty = 2);
+    if (mode == "multi") {
+      setState("connectedPlayer", "waiting");
+      setState("hostPlayer", "waiting");
+    }
   }
   constructor(title = "Game") {
     super(title);
   }
+  /**
+   * The create function is called once per game instance, only once the game has fully loaded.
+   * It is responsible for creating all of the elements of the game, including the
+   * background, player and enemies. It also sets up any event listeners or timers.
+   */
   async create() {
-    if (this.mode == "single") {
+    if (mode == "single") {
       wordList = getWordList();
     }
     if (wordList[0] !== undefined) curWord = wordList[0];
@@ -133,7 +171,7 @@ export class Game extends Scene {
       [],
       this
     );
-    if (this.mode == "multi") {
+    if (mode == "multi") {
       // final fallback if connected player cannot retrieve same list from host
       if (typeof wordList == "undefined" || wordList[0] == undefined)
         wordList = getWordList();
@@ -156,12 +194,16 @@ export class Game extends Scene {
       [],
       this
     );
+    setTimeout(() => {
+      playerOne.health = 0;
+      this.gameOver(playerTwo);
+    }, 5000);
   }
   update() {
     if (gameOver == true) return;
     wordBoard.setText(playerOne.curWord); //constantly updates the display of the current word
     updatePlayerStats(playerOne);
-    if (this.mode == "multi") {
+    if (mode == "multi") {
       //get player two stats
       if (this.isHost == true) {
         playerTwo.energy = getState("connectedPlayerEnergy");
@@ -171,7 +213,7 @@ export class Game extends Scene {
     }
     updatePlayerStats(playerTwo);
     if (
-      this.mode == "multi" &&
+      mode == "multi" &&
       playerTwo.energy == playerTwo.maxPower &&
       this.multiplayerAttackDelay == false
     ) {
@@ -186,58 +228,81 @@ export class Game extends Scene {
     }
   }
   gameOver(winningPlayer) {
-    wordBoard.setText("");
     gameOver = true;
-    if (this.mode == "single") clearInterval(playerTwo.interval);
-    let text;
+    if (playerOne.health < 0) playerOne.health = 0;
+    if (playerTwo.health < 0) playerTwo.health = 0;
+    updatePlayerStats(playerOne);
+    updatePlayerStats(playerTwo);
+    wordBoard.setText("");
+    if (mode == "single") clearInterval(playerTwo.interval);
     winningPlayer == playerOne
-      ? (text = this.add.text(
-          screenCenterX,
-          screenCenterY - 200,
-          "YOU WIN!!!",
-          {
+      ? this.add
+          .text(screenCenterX - 280, screenCenterY - 200, "YOU WIN!!!", {
             fontFamily: "Caveat",
-            fontSize: 80,
+            fontSize: 300,
             color: "#00FF7F",
             stroke: "#000000",
             strokeThickness: 8,
             align: "center",
-          }
-        )).setScale(0.5)
+          })
+          .setScale(0.5)
       : this.add
-          .text(screenCenterX, screenCenterY - 200, "YOU LOSE", {
+          .text(screenCenterX - 280, screenCenterY - 200, "YOU LOSE", {
             fontFamily: "Caveat",
-            fontSize: 80,
+            fontSize: 320,
             color: "#ffffff",
             stroke: "#D2042D",
             strokeThickness: 8,
             align: "center",
           })
           .setScale(0.5);
-
-    this.add
-      .text(
-        screenCenterX,
-        screenCenterY - 400,
-        `Press Enter for a rematch
+    if (mode == "single")
+      endingGameText = this.add
+        .text(
+          screenCenterX - 300,
+          screenCenterY + 20,
+          `Press Enter for a rematch
       OR
       Press Esc to go back to main menu`,
-        {
-          fontFamily: "Caveat",
-          fontSize: 50,
-          color: "#ffffff",
-          stroke: "#000000",
-          strokeThickness: 8,
-          align: "center",
-        }
-      )
-      .setScale(0.5);
-    //allow for restart, TODO : change to back to main menu
-    // this.input.keyboard.on("keydown", (event) => {
-    //   if (event.key == "Enter") {
-    //     this.scene.start("Game");
-    //   }
-    // });
+          {
+            fontFamily: "Caveat",
+            fontSize: 90,
+            color: "#ffffff",
+            stroke: "#000000",
+            strokeThickness: 8,
+            align: "center",
+          }
+        )
+        .setScale(0.5);
+    else {
+      let multiplayerRestartText = ` 
+      Go to the main Itch.io site 
+      to host your own 
+      and play with a friend.`;
+      if(isHost == true) multiplayerRestartText = `Refresh the page to host
+      a game with a different friend`
+      endingGameText = this.add
+        .text(
+          screenCenterX - 260,
+          screenCenterY + 20,
+          `Press Enter for a rematch 
+            with the same friend
+      OR
+      Press ESC to restart your game
+       and play with a CPU.
+      OR` + multiplayerRestartText,
+          {
+            fontFamily: "Caveat",
+            fontSize: 60,
+            color: "#ffffff",
+            stroke: "#000000",
+            strokeThickness: 8,
+            align: "center",
+          }
+        )
+        .setScale(0.5);
+        
+    }
   }
 
   cpuInput(key) {
@@ -250,7 +315,7 @@ export class Game extends Scene {
   }
   async createPlayers(curWord) {
     let pOneX = 650;
-    if (this.mode == "multi") {
+    if (mode == "multi") {
       if (this.isHost == true) {
         playerOne = createPlayer(
           this,
@@ -301,6 +366,16 @@ export class Game extends Scene {
 
 /* Creation logic */
 
+/**
+ * Creates a player one object.
+ * @param {Phaser.Scene} scene - The scene the player is being created in.
+ * @param {number} power - The power of the player.
+ * @param {number} x - The x position of the player.
+ * @param {number} y - The y position of the player.
+ * @param {string} curWord - The word the player is currently typing.
+ * @param {boolean} [firstPlayer=true] - Whether this is the first player or not.
+ * @returns {Player} The created player.
+ */
 function createPlayer(scene, power, x, y, curWord, firstPlayer = true) {
   const player = new Player(scene, power, x, y, curWord);
   player.create(power);
@@ -316,10 +391,10 @@ function createPlayer(scene, power, x, y, curWord, firstPlayer = true) {
   player.healthBar.create();
   (player.powerBar = new PowerBar(
     scene,
-    100,
-    200,
-    20,
-    200,
+    205,
+    100 + 15,
+    powerBarHeight,
+    powerBarWidth,
     0xffffff,
     player.maxPower
   )),
@@ -328,12 +403,23 @@ function createPlayer(scene, power, x, y, curWord, firstPlayer = true) {
   player.curWordIndex = 0;
   return player;
 }
+
+/**
+ * Creates a player two object (only for multiplayer).
+ * @param {Phaser.Scene} scene - The scene the player is being created in.
+ * @param {number} power - The power of the player.
+ * @param {number} x - The x position of the player.
+ * @param {number} y - The y position of the player.
+ * @param {string} curWord - The word the player is currently typing.
+ * @param {boolean} [firstPlayer=true] - Whether this is the first player or not.
+ * @returns {Player} The created player.
+ */
 function createMultiPlayerTwo(scene, power, x, y, curWord, firstPlayer) {
   const player = new Player(scene, power, x, y, curWord);
   player.create(power);
   player.healthBar = new HealthBar(
     scene,
-    x / 2.5,
+    x / 2.5 - 20,
     100,
     400,
     30,
@@ -343,10 +429,10 @@ function createMultiPlayerTwo(scene, power, x, y, curWord, firstPlayer) {
   player.healthBar.create();
   player.powerBar = new PowerBar(
     scene,
-    x / 2.5 + 180,
-    200,
-    20,
-    200,
+    -300,
+    100 + 15,
+    powerBarHeight,
+    powerBarWidth,
     0xffffff,
     player.maxPower
   );
@@ -355,17 +441,28 @@ function createMultiPlayerTwo(scene, power, x, y, curWord, firstPlayer) {
   player.curWordIndex = 0;
   return player;
 }
+
+/**
+ * Creates a player two cpu object (only for singleplayer).
+ * @param {Phaser.Scene} scene - The scene the player is being created in.
+ * @param {number} power - The power of the player.
+ * @param {number} x - The x position of the player.
+ * @param {number} y - The y position of the player.
+ * @param {string} curWord - The word the player is currently typing.
+ * @param {boolean} [firstPlayer=true] - Whether this is the first player or not.
+ * @returns {Player} The created player.
+ */
 function createCpu(scene, power, x, y, curWord) {
   const cpu = new Cpu(scene, power, x, y, curWord, false);
   cpu.create(power);
-  cpu.healthBar = new HealthBar(scene, x / 2.5, 100, 400, 30, 0xffffff);
+  cpu.healthBar = new HealthBar(scene, x / 2.5 - 20, 100, 400, 30, 0xffffff);
   cpu.healthBar.create();
   cpu.powerBar = new PowerBar(
     scene,
-    x / 2.5 + 180,
-    200,
-    20,
-    200,
+    772,
+    100 + 15,
+    powerBarHeight,
+    powerBarWidth,
     0xffffff,
     cpu.maxPower
   );
@@ -382,11 +479,22 @@ function updatePlayerStats(player) {
 
 /*Game logic*/
 function handleKeyboardInput(event, player = playerOne) {
-  console.log(event.key);
   if (gameOver == true) {
-    if (event.key == "Enter") this.scene.start("Game", this.preData);
-    else if (event.key == "Escape") this.scene.start("MainMenu");
-    else return;
+    if(canLeave == false) return;
+    canLeave = false;
+    if (event.key == "Enter") {
+      endingGameText.setText("");
+      if (mode == "multi") multiplayerReset();
+      else this.scene.start("Game", preData);
+    } else if (event.key == "Escape") {
+      endingGameText.setText("");
+
+      if (mode == "multi") {
+        setState("hostPlayer", "left");
+        setState("connectedPlayer", "left");
+        playerOne.scene.scene.start("MainMenu");
+      } else playerOne.scene.scene.start("MainMenu");
+    } else return;
   }
   //check if input is valid letter in alphabet
   if (!event.key.match(/[a-z]/i)) return invalidInput(player);
@@ -397,7 +505,6 @@ function handleKeyboardInput(event, player = playerOne) {
   return invalidInput(player);
 }
 function invalidInput(player) {
-  console.log(Game);
   player.energy = 0;
   errorSound.play();
   flash(wordBoard, 0xff0000, 100);
@@ -408,7 +515,47 @@ function invalidInput(player) {
     else setState("connectedPlayerEnergy", player.energy);
   }
 }
-
+function multiplayerReset() {
+  if (isHost == true) {
+    setState("hostPlayer", "ready");
+    setState("hostPlayerPower", playerOne.power);
+    setState("hostPlayerEnergy", 0);
+    setState("hostPlayerHealth", 100);
+    let waiting = setInterval(() => {
+      if (getState("connectedPlayer") == "ready") {
+        clearInterval(waiting);
+        playerOne.scene.scene.start("Game", preData);
+      } else if (getState("connectedPlayer") == "left") {
+        endingGameText.setText(
+          "The other player left. Refresh your browser to fully restart."
+        );
+      } else {
+        endingGameText.setText(
+          "Waiting for player... Refresh your browser to fully restart. if this takes too long"
+        );
+      }
+    }, 1000);
+  } else {
+    setState("connectedPlayer", "ready");
+    setState("connectedPlayerPower", playerOne.power);
+    setState("connectedPlayerEnergy", 0);
+    setState("connectedPlayerHealth", 100);
+    let waiting = setInterval(() => {
+      if (getState("hostPlayer") == "ready") {
+        clearInterval(waiting);
+        playerOne.scene.scene.start("Game", preData);
+      } else if (getState("hostPlayer") == "left") {
+        endingGameText.setText(
+          "The other player left. Press escape to restart."
+        );
+      } else {
+        endingGameText.setText(
+          "Waiting for player... Press escape to restart if this takes too long"
+        );
+      }
+    }, 1000);
+  }
+}
 /**
  * Handles valid input from the player.
  * Removes the first letter from the current word, and moves on to the next letter.

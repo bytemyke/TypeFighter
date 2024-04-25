@@ -1,20 +1,40 @@
+/**
+ * The CpuDifficultySelector scene is responsible for allowing the player to select
+ * the difficulty level for their opponent in a single player game. It displays a grid of
+ * buttons with the different difficulty levels, and when one is pressed, it sends the player
+ * to the Game scene with the selected difficulty and power level.
+ */
 import { Scene } from "phaser";
 import { createButton } from "../functions/createButton";
 import { createMuteOption } from "../functions/createMuteOption";
 
-//{ power: power, mode: "single" }
 export class CpuDifficultySelector extends Scene {
+  /**
+   * @constructor
+   */
+  constructor() {
+    super("CpuDifficultySelector");
+  }
+
+  /**
+   * The data passed to this scene includes the power level that the player has chosen
+   * in the ChoosePower scene. The scene also uses the mode, which is either 'single' or
+   * 'multi'.
+   * @param {Object} data - The data passed to this scene.
+   * @param {string} data.mode - The mode the game is being played in.
+   * @param {number} data.power - The power level the player has chosen.
+   */
   init(data) {
-    data.mode == "single" || data.mode == "multi"
+    data.mode === "single" || data.mode === "multi"
       ? (this.mode = data.mode)
       : (this.mode = "single");
     this.power = data.power;
   }
-  constructor() {
-    super("CpuDifficultySelector");
-  }
+
+  /**
+   * Creates the background, header, and difficulty level buttons of this scene.
+   */
   create() {
-    console.log("creating CpuDifficultySelector");
     const screenCenterX =
       this.cameras.main.worldView.x + this.cameras.main.width / 2;
     const screenCenterY =
@@ -68,3 +88,4 @@ export class CpuDifficultySelector extends Scene {
     createMuteOption(this);
   }
 }
+
