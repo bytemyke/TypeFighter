@@ -374,7 +374,7 @@ function invalidInput(player) {
   console.log(Game);
   player.energy = 0;
   errorSound.play();
-  flash(player.scene, wordBoard, 0xff0000, 100);
+  flash(wordBoard, 0xff0000, 100);
   /*on multiplayer, update energy state for playerOne via playroom as well (only player one can have a keyboard input via multiplayer, 
   both are player one one their own systems) */
   if (mode == "multi") {
