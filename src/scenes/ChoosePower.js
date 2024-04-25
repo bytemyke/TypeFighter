@@ -66,15 +66,14 @@ export class ChoosePower extends Scene {
 
     //Create Grid
     Phaser.Actions.GridAlign(powers, {
-      width: gridH,
-      height: gridW,
+      width: 2,
+      height: 2,
       cellWidth: gridW / 2,
       cellHeight: gridH / 2,
       x: screenCenterX - cellWidth,
       y: screenCenterY + 100 - cellHeight,
     });
     createMuteOption(this);
-
   }
 
   /**

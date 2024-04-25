@@ -36,8 +36,8 @@ export class CpuDifficultySelector extends Scene {
     const y = 350;
     const gridW = 1100;
     const gridH = 619;
-    const cellWidth = gridW / 2;
-    const cellHeight = gridH / 2;
+    const cellWidth = gridW / 3 + 100;
+    const cellHeight = gridH / 3;
     let options = ["Laughable ", "Moderate ", "Powerful ", "Good Luck lol "];
     const buttons = [];
     for (let i = 1; i <= 4; i++) {
@@ -57,14 +57,14 @@ export class CpuDifficultySelector extends Scene {
     }
     //Create Grid
     Phaser.Actions.GridAlign(buttons, {
-      width: gridH,
-      height: gridW,
-      cellWidth: gridW / 2 - 100,
-      cellHeight: gridH,
-      x: cellWidth / 2,
-      y: screenCenterY + 300 - cellHeight,
+      width: 4,
+      height: 1,
+      cellWidth: cellWidth,
+      cellHeight: cellHeight,
+      x: 0,
+      y: screenCenterY + 100 - cellHeight,
+      position: Phaser.Display.Align.CENTER,
     });
     createMuteOption(this);
-
   }
 }
