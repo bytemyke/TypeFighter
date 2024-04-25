@@ -44,7 +44,7 @@
     {
       "name": "Strength",
       "maxPower": 8,
-      "dmg": 24,
+      "dmg": 25,
       "description": "Passively blocks 20% of damage received from opponents each time they attack ",
       "animations": {
         "idle": {
