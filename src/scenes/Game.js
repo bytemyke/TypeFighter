@@ -482,14 +482,14 @@ function updatePlayerStats(player) {
 function handleKeyboardInput(event, player = playerOne) {
   if (gameOver == true) {
     if(canLeave == false) return;
-    canLeave = false;
     if (event.key == "Enter") {
+      canLeave = false;
       endingGameText.setText("");
       if (mode == "multi") multiplayerReset();
       else this.scene.start("Game", preData);
     } else if (event.key == "Escape") {
+      canLeave = false;
       endingGameText.setText("");
-
       if (mode == "multi") {
         setState("hostPlayer", "left");
         setState("connectedPlayer", "left");
