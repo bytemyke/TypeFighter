@@ -194,10 +194,11 @@ export class Game extends Scene {
       [],
       this
     );
-    setTimeout(() => {
-      playerOne.health = 0;
-      this.gameOver(playerTwo);
-    }, 5000);
+    //dev tool for testing game over
+    // setTimeout(() => {
+    //   playerOne.health = 0;
+    //   this.gameOver(playerTwo);
+    // }, 5000);
   }
   update() {
     if (gameOver == true) return;
