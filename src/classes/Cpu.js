@@ -1,5 +1,5 @@
 // Cpu class
-// 
+//
 // @file
 // @module
 // @class Cpu
@@ -14,12 +14,12 @@ export class Cpu extends Player {
    * Options : 1,2,3,4
    * @type {number}
    */
-  difficulty = 1
+  difficulty = 1;
   /**
    * can the CPU input text?
    * @type {boolean}
    */
-  canInput = true
+  canInput = true;
   /**
    * constructor for the CPU class
    * @constructor
@@ -47,12 +47,10 @@ export class Cpu extends Player {
     // CPM += 50; //They all are a bit too weak. Might need to be adjusted.
     let ms = 60000 / CPM;
     this.interval = setInterval(() => {
-      if(!this.curWord || this.gameOver == true) return;
-      if(this.canInput == true)
-        this.scene.cpuInput(this.curWord[0]);
+      if (!this.curWord || this.gameOver == true) return;
+      if (this.canInput == true) this.scene.cpuInput(this.curWord[0]);
     }, ms);
   }
-
 }
 /**
  * Translate the difficulty to a character per minute
@@ -62,11 +60,15 @@ export class Cpu extends Player {
 function translateDifficulty(difficulty) {
   //basing CPM based on data from https://www.typingpal.com/en/documentation/school-edition/pedagogical-resources/typing-speed
   switch (difficulty) {
-    case 1: return Phaser.Math.Between(20, 40);
-    case 2: return Phaser.Math.Between(150, 250);
-    case 3: return Phaser.Math.Between(500, 600);
-    case 4: return Phaser.Math.Between(800, 900);
-    default: return 200;
+    case 1:
+      return Phaser.Math.Between(10, 25);
+    case 2:
+      return Phaser.Math.Between(100, 200);
+    case 3:
+      return Phaser.Math.Between(300, 400);
+    case 4:
+      return Phaser.Math.Between(700, 800);
+    default:
+      return 200;
   }
-
 }
