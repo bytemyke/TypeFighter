@@ -431,7 +431,7 @@ function createMultiPlayerTwo(scene, power, x, y, curWord, firstPlayer) {
   player.healthBar.create();
   player.powerBar = new PowerBar(
     scene,
-    -300,
+    772,
     100 + 15,
     powerBarHeight,
     powerBarWidth,
@@ -569,21 +569,21 @@ function validInput(player) {
   player.curWord = player.curWord.substring(1);
   if (player.curWord.length == 0) {
     let newWord = getRandomWord();
-    if (mode == "multi") {
+    //can only be player one in multiplayer
+    if (mode == "multi" && player.energy == playerOne.energy) {
       let list = getState("wordList");
       // generate new word
       list.push(newWord);
       setState("wordList", list);
       //get next word from list
-      player.curWordIndex++;
-      player.curWord = list[player.curWordIndex];
-      player.energy++;
-      if (isHost == true) setState("hostPlayerEnergy", player.energy);
-      else setState("connectedPlayerEnergy", player.energy);
-
-      if (player.energy == player.maxPower) {
-        player.attack(player.target);
-        player.energy = 0;
+      playerOne.curWordIndex++;
+      playerOne.curWord = list[playerOne.curWordIndex];
+      playerOne.energy++;
+      if (isHost == true) setState("hostPlayerEnergy", playerOne.energy);
+      else setState("connectedPlayerEnergy", playerOne.energy);
+      if (playerOne.energy == playerOne.maxPower) {
+        playerOne.attack(playerOne.target);
+        playerOne.energy = 0;
       }
     } else {
       // generate new word
