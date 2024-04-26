@@ -100,6 +100,7 @@ export class Game extends Scene {
    * background, player and enemies. It also sets up any event listeners or timers.
    */
   async create() {
+    canLeave = true;
     if (mode == "single") {
       wordList = getWordList();
     }
@@ -221,7 +222,7 @@ export class Game extends Scene {
       this.multiplayerAttackDelay = true;
       playerTwo.attack(playerTwo.target);
       playerTwo.energy = 0;
-      if (isHost == true) setState("connectedPlayerEnergy", 0);
+      if (isHost == true) setState("connectedPlayerE    nergy", 0);
       else setState("hostPlayerEnergy", 0);
       setTimeout(() => {
         this.multiplayerAttackDelay = false;
@@ -280,8 +281,9 @@ export class Game extends Scene {
       Go to the main Itch.io site 
       to host your own 
       and play with a friend.`;
-      if(isHost == true) multiplayerRestartText = `Refresh the page to host
-      a game with a different friend`
+      if (isHost == true)
+        multiplayerRestartText = `Refresh the page to host
+      a game with a different friend`;
       endingGameText = this.add
         .text(
           screenCenterX - 260,
@@ -302,7 +304,6 @@ export class Game extends Scene {
           }
         )
         .setScale(0.5);
-        
     }
   }
 
@@ -481,7 +482,7 @@ function updatePlayerStats(player) {
 /*Game logic*/
 function handleKeyboardInput(event, player = playerOne) {
   if (gameOver == true) {
-    if(canLeave == false) return;
+    if (canLeave == false) return;
     if (event.key == "Enter") {
       canLeave = false;
       endingGameText.setText("");
@@ -547,11 +548,11 @@ function multiplayerReset() {
         playerOne.scene.scene.start("Game", preData);
       } else if (getState("hostPlayer") == "left") {
         endingGameText.setText(
-          "The other player left. Press escape to restart."
+          "The other player left. Refresh your browser to restart."
         );
       } else {
         endingGameText.setText(
-          "Waiting for player... Press escape to restart if this takes too long"
+          "Waiting for player... Refresh your browser to restart if this takes too long"
         );
       }
     }, 1000);
