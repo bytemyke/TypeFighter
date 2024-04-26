@@ -219,12 +219,16 @@ export class Game extends Scene {
       playerTwo.energy == playerTwo.maxPower &&
       this.multiplayerAttackDelay == false
     ) {
+      let connectionStr =
+        isHost == true ? "connectedPlayerEnergy" : "hostPlayerEnergy";
       this.multiplayerAttackDelay = true;
       playerTwo.attack(playerTwo.target);
       playerTwo.energy = 0;
-      if (isHost == true) setState("connectedPlayerE    nergy", 0);
-      else setState("hostPlayerEnergy", 0);
-      setTimeout(() => {
+      if (isHost == true) setState(connectionStr, 0);
+      else setState(connectionStr, 0);
+      let waitInterval = setInterval(() => {
+        if (getState(connectionStr) !== 0 && getState(connectionStr) == 0)
+          clearInterval(waitInterval);
         this.multiplayerAttackDelay = false;
       }, 1000);
     }
